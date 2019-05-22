@@ -3,12 +3,12 @@
 ## clone the projects
 まずは、server側のbackendにあたる本プロジェクトをcloneしてください。  
 `
-git clone https://github.com/tauty/amazonpay-samaple_server.git
+git clone https://github.com/tauty/amazonpay-mobile-sample_server.git
 `
 
 そして、client側にあたるAndroidのプロジェクトもcloneしてください。  
 `
-git clone https://github.com/tauty/amazonpay-samaple_android.git
+git clone https://github.com/tauty/amazonpay-mobile-sample_android.git
 `
 
 ## open the projects
