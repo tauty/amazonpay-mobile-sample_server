@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" class="gr__s3-ap-northeast-1_amazonaws_com">
+<head>
+    <meta charset="UTF-8">
+    <title>Amazon Pay Sample</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="./css/shop-confirmation.css" rel="stylesheet">
+</head>
+<body>
+<div class="row">
+
+    <!-- Blog Entries Column -->
+    <div class="col-md-8">
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">ご注文内容</h5>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">商品名</th>
+                        <th scope="col">単価(税込)</th>
+                        <th scope="col" class="text-center">数量</th>
+                        <th scope="col" class="text-right">小計</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${order.items}" th:object="${item}">
+                        <td><img class="confirmation-item" src="./img/item0010.jpg" th:src="|./img/*{itemId}.jpg|">
+                        </td>
+                        <td class="text-right" th:text="*{itemName}">コロンビア・ビルバオ コーヒー豆</td>
+                        <td class="text-right" th:text="|￥*{#numbers.formatInteger(price, 3, 'COMMA')}|">￥2,000</td>
+                        <td class="text-right" th:text="*{number}">2</td>
+                        <td class="text-right" th:text="|￥*{#numbers.formatInteger(summary, 3, 'COMMA')}|">￥4,000
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="image" src="./img/btn_amazon.png" onclick="toAmazonPay()">
+
+</body>
+<script type="text/javascript">
+    function toAmazonPay() {
+        location.href = "intent://amazon_pay_host#Intent;package=com.amazon.pay.sample.android;scheme=amazon_pay_schema;S.token=[[${token}]];end;";
+    }
+</script>
+</html>

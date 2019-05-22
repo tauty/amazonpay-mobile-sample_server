@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Amazon Pay Sample</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+Fire HD 8  - ¥8,980 <input type="text" id="hd8" value="1" onchange="registerOrder()">個<br>
+Fire HD 10 - ¥15,980 <input type="text" id="hd10" value="1" onchange="registerOrder()">個<br>
+<button onclick="toAmazonPay()">Amazon Pay</button>
+</body>
+<script type="text/javascript">
+    var token = null;
+    function registerOrder() {
+        var params = {hd8: $('#hd8').val(), hd10: $('#hd10').val()};
+        if(token) {
+            params['token'] = token;
+        }
+        $.ajax({
+            url: 'register',
+            type: 'POST',
+            data: params
+        })
+        .done( (data) => {
+            token = data;
+        });
+    }
+    registerOrder();
+
+    function toAmazonPay() {
+        location.href = "https://localhost:8443/button?token=" + token;
+    }
+</script>
+</html>
