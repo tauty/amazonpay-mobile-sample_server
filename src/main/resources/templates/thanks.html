@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- saved from url=(0751)https://s3-ap-northeast-1.amazonaws.com/amazonpay-demoshop/amazonpay-demoshop/shop-confirmation.html?utm_nooverride=1#access_token=Atza%7CIwEBIL2Twq903x2qgZiihM1jnE7mJwCk85y9SPo6QpOEj38go_ZTxZgwgv-0-AH86sbiGnTEyMdyrAjp9GRhYkI_0kxy7Jc14cVKRJ42UeiQR9tVTtyZkeGBXz-b3bVDIJpJWggBJIqtde-NDYjDZdmSaPuNzlVNfTWeGqI4deG6n1kuLOkETiA8Z-67_x7KfzG_pADWwykip1_3NnnYx6LcVfRAVE8lrUZFyoL9iURfOKELg0VuaPLgBSf98V83vgIG_3NsKFuVkT7gL32NjStIkkgHCvCIgRdybOLvtJFZ8QCwY5FIuQBxPEzM8qqoHEWzKQVC6PxZVZJhkPkmJ8O_EPoylZEQSKzTh4ek2GhqfwO1GlakGVoAQ0DfJ3JOBxFighnmz6qyrAANJLH_JrDKk8xXrXJzZ-HSr285jFGibuy_h249hwqW-cj4_it8YaIQFtpFg0zNY5tdZOPr7rcpYFQyy6hYb3iaEPsy7VCLX6e9L07auMKF56NMO9OwSQkaWoA&token_type=bearer&expires_in=3600&scope=profile+payments%3Awidget+payments%3Ashipping_address -->
 <html xmlns:th="http://www.thymeleaf.org" lang="en" class="gr__s3-ap-northeast-1_amazonaws_com">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="">
@@ -41,6 +40,7 @@
                         </tr>
                         </thead>
                         <tbody>
+                        <!-- ApayController#thanksから受け取ったorder.itemsの情報を表示 -->
                         <tr th:each="item : ${order.items}" th:object="${item}">
                             <td><img class="confirmation-item" src="./img/item0010.jpg" th:src="|./img/*{itemId}.jpg|">
                             </td>
@@ -53,6 +53,7 @@
                         </tbody>
                     </table>
 
+                    <!-- ApayController#thanksから受け取ったorderの情報を表示 -->
                     <table class="table table-striped">
                         <tbody>
                         <tr>
@@ -90,6 +91,7 @@
                 <h5 class="card-header">お支払い金額</h5>
                 <div class="card-body" id="highlight2">
 
+                    <!-- ApayController#thanksから受け取ったorderの情報を表示 -->
                     <table class="table table-striped">
                         <tbody>
                         <tr>

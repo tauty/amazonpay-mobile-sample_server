@@ -71,6 +71,7 @@ public class ApayRestController {
         String myOrderId = DatabaseMock.storeOrder(order);
 
         // 受注Objectへのアクセス用tokenの返却
+        // Note: tokenを用いる理由については、TokenUtilのJavadoc参照.
         return token != null ? token : TokenUtil.storeByToken(myOrderId);
     }
 

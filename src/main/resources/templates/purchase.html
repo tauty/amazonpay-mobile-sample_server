@@ -2,6 +2,7 @@
 <html>
 <head>
     <script>
+    // ApayController#purchaseから受け取ったtokenの情報を埋め込んで、intentを送信してThanksActivityを起動する.
     location.href = "intent://thanks_host#Intent;package=com.amazon.pay.sample.android;scheme=thanks_schema;S.token=[[${token}]];end;";
     </script>
     <style type="text/css">

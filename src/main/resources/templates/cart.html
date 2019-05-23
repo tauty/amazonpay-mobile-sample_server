@@ -30,6 +30,7 @@
                     </tr>
                     </thead>
                     <tbody>
+                    <!-- ApayController#createOrderから受け取ったorder.itemsの情報を表示 -->
                     <tr th:each="item : ${order.items}" th:object="${item}">
                         <td><img class="confirmation-item" src="./img/item0010.jpg" th:src="|./img/*{itemId}.jpg|">
                         </td>
@@ -52,6 +53,7 @@
 </body>
 <script type="text/javascript">
     function toAmazonPay() {
+        // ApayController#createOrderから受け取ったtokenを埋め込んだintentを送信して、AmazonPayActivityを起動する.
         location.href = "intent://amazon_pay_host#Intent;package=com.amazon.pay.sample.android;scheme=amazon_pay_schema;S.token=[[${token}]];end;";
     }
 </script>

@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- saved from url=(0751)https://s3-ap-northeast-1.amazonaws.com/amazonpay-demoshop/amazonpay-demoshop/shop-confirmation.html?utm_nooverride=1#access_token=Atza%7CIwEBIL2Twq903x2qgZiihM1jnE7mJwCk85y9SPo6QpOEj38go_ZTxZgwgv-0-AH86sbiGnTEyMdyrAjp9GRhYkI_0kxy7Jc14cVKRJ42UeiQR9tVTtyZkeGBXz-b3bVDIJpJWggBJIqtde-NDYjDZdmSaPuNzlVNfTWeGqI4deG6n1kuLOkETiA8Z-67_x7KfzG_pADWwykip1_3NnnYx6LcVfRAVE8lrUZFyoL9iURfOKELg0VuaPLgBSf98V83vgIG_3NsKFuVkT7gL32NjStIkkgHCvCIgRdybOLvtJFZ8QCwY5FIuQBxPEzM8qqoHEWzKQVC6PxZVZJhkPkmJ8O_EPoylZEQSKzTh4ek2GhqfwO1GlakGVoAQ0DfJ3JOBxFighnmz6qyrAANJLH_JrDKk8xXrXJzZ-HSr285jFGibuy_h249hwqW-cj4_it8YaIQFtpFg0zNY5tdZOPr7rcpYFQyy6hYb3iaEPsy7VCLX6e9L07auMKF56NMO9OwSQkaWoA&token_type=bearer&expires_in=3600&scope=profile+payments%3Awidget+payments%3Ashipping_address -->
 <html xmlns:th="http://www.thymeleaf.org" lang="en" class="gr__s3-ap-northeast-1_amazonaws_com">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="">
@@ -65,6 +64,7 @@
                         </tr>
                         </thead>
                         <tbody>
+                        <!-- ApayController#confirmOrderから受け取ったorder.itemsの情報を表示 -->
                         <tr th:each="item : ${order.items}" th:object="${item}">
                             <td><img class="confirmation-item" src="./img/item0010.jpg" th:src="|./img/*{itemId}.jpg|">
                             </td>
@@ -89,6 +89,7 @@
                 <h5 class="card-header">お支払い金額</h5>
                 <div class="card-body" id="highlight2">
 
+                    <!-- ApayController#confirmOrderから受け取ったorderの情報を表示 -->
                     <table class="table table-striped">
                         <tbody>
                         <tr>
@@ -133,6 +134,7 @@
 
                     <div>
                         <form method="post" action="purchase" name="purchase_form">
+                            <!-- ApayController#confirmOrderから受け取ったtokenの情報を埋め込む -->
                             <input type="hidden" id="token" name="token" value="ecde72b9-3e10-45bf-ab45-a1833751c37b"
                                    th:value="${token}">
                             <input type="hidden" id="access_token" name="accessToken">
@@ -177,6 +179,7 @@
     }
 
       window.onAmazonLoginReady = function() {
+        // ApayController#confirmOrderから受け取ったclientIdの情報を埋め込む
         amazon.Login.setClientId("[[${clientId}]]");
         amazon.Login.setUseCookie(true); //popup=falseにときに必要
 
@@ -198,6 +201,7 @@
       function showAddressBookWidget() {
           // AddressBook
           new OffAmazonPayments.Widgets.AddressBook({
+            // ApayController#confirmOrderから受け取ったsellerIdの情報を埋め込む
             sellerId: '[[${sellerId}]]',
 
             onReady: function (orderReference) {
@@ -296,6 +300,7 @@
       function showWalletWidget(orderReferenceId) {
           // Wallet
           new OffAmazonPayments.Widgets.Wallet({
+            // ApayController#confirmOrderから受け取ったsellerIdの情報を埋め込む
             sellerId: '[[${sellerId}]]',
             amazonOrderReferenceId: orderReferenceId,
             onReady: function(orderReference) {

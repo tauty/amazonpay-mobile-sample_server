@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- saved from url=(0094)https://s3-ap-northeast-1.amazonaws.com/amazonpay-demoshop/amazonpay-demoshop/shop-cart.html?# -->
 <html lang="en" class="gr__s3-ap-northeast-1_amazonaws_com">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -39,7 +38,7 @@
 <!-- Amazon Pay JavaScript -->
 <script type="text/javascript">
       window.onAmazonLoginReady = function() {
-        amazon.Login.setClientId("[[${clientId}]]");
+        amazon.Login.setClientId("[[${clientId}]]"); //
         amazon.Login.setUseCookie(true);
       };
 
@@ -70,8 +69,6 @@
       }
 
 </script>
-<!-- script type="text/javascript" async="async"
-        src="https://static-fe.payments-amazon.com/OffAmazonPayments/jp/lpa/js/Widgets.js"></script -->
 <script async="async"
         src='https://static-fe.payments-amazon.com/OffAmazonPayments/jp/sandbox/lpa/js/Widgets.js'></script>
 </body>
