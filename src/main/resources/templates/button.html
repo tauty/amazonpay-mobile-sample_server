@@ -57,7 +57,7 @@
 
             authorization: function() {
               loginOptions = {scope: "profile payments:widget payments:shipping_address", popup: false};
-              authRequest = amazon.Login.authorize (loginOptions, "confirm_order?utm_nooverride=1");
+              authRequest = amazon.Login.authorize (loginOptions, "confirm_order");
             },
             onError: function(error) {
                 console.log(error.getErrorCode());

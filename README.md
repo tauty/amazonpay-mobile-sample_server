@@ -16,13 +16,24 @@ cloneしてきたプロジェクトは、それぞれserver側が[Intellij IDEA 
 これらのIDEをまだインストールされていない方は、上記のリンク先よりダウンロードしてインストールするか、パッケージマネージャの利用が可能ならそちらからインストールするかしてください。
 
 ### open the server project & start
-
 server側のプロジェクトは、Intellij IDEAで開きます。
 まずはIntellijを立ち上げます。  
 *※ 下記の画面になっていない場合は、Intellijで開いているプロジェクトを全て閉じてください。*  
 ![intellij-welcome](img/intellij_welcome.png)
 「Import Project」 → cloneしたプロジェクトを選択 → 「Open」 → 「Import project from external model」「Gradle」を選んで、「Next」 →　「Finish」  
 プロジェクトが開いてGradleのbuildが始まりますので、終わるまで数分お待ちください。  
+
+#### register new application and cofigure its redirect URL via seller central
+[Seller Central](https://sellercentral.amazon.co.jp/)にて、本サンプル用に新しいアプリケーションを登録します。
+登録したアプリケーションのウェブ設定より、JavaScriptの種類とリダイレクトURLを下記のように設定します。
+- JavaScriptの種類
+  - https://localhost:8443
+  - https://10.0.2.2:8443
+- リダイレクトURL
+  - https://localhost:8443/confirm_order
+  - https://10.0.2.2:8443/confirm_order
+
+Note: IPアドレスの「10.0.2.2」とは、PCと接続したAndroidデバイス＆Android EmulatorからPCの「localhost」環境にアクセスするための特殊なアドレスです。
 
 #### configure merchant.properties
 クライアントID、出品者ID、アクセスキーID、シークレットアクセスキーを、merchant.propertiesファイルに設定します。  
@@ -35,7 +46,7 @@ seller.id=XXXXXXXXXXXXXX
 access.key=XXXXXXXXXXXXXXXXXXXX
 secret.key=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
-ご自身の保有するSeller Centralのアカウントのページより、上記それぞれのクライアントID、出品者ID、アクセスキーID、シークレットアクセスキーを入力して、保存してください。  
+ご自身の保有する[Seller Central](https://sellercentral.amazon.co.jp/)のアカウントのページより、上記それぞれのクライアントID、出品者ID、アクセスキーID、シークレットアクセスキーを入力して、保存してください。  
 なお、ここで編集した「./src/main/resources/merchant.properties」は、「.gitignore」という仕組みを用いてgitには登録されないよう設定されています。よってこちらはcommitもpushもされませんので、入力した内容が漏洩することはありません。
 
 #### bootRun
@@ -61,6 +72,7 @@ Android StudioはIntellijをベースに開発されていますので、基本�
 終了したら、Menuの「Run」→「Run app」か、画面上部の「Run app」ボタンより、applicationを起動してください。
 ![androidstudio-project](img/android_project.png)
 下記のようなapplicationを実行するAndroidデバイス or Virtual Device(Emulatorで起動される、仮想的なAndroidデバイス)を選択する画面が開きます。今回はEmulatorでの起動方法を説明します。  
+「Create New Virtual Device」をクリックします。  
 ![androidstudio-select-emu](img/android_select_emu.png)
 今回のサンプルはSDK28で作成されていますので、それ以上のVersionのVirtual Deviceがあればそちらを選択します。
 そうでなければ、ここで「Create New Virtual Device」をクリックして、Virtual Deviceを作成します。  

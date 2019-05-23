@@ -34,4 +34,4 @@ openssl pkcs12 -export -in sample.crt -inkey sample.key -out sample.p12
 ```
 
 ## Note
-上記の各コマンドで、生成されるファイル名の部分は変更しても良いが、「sample.p12」を変更した場合には「./src/main/resources/application.properties」の「server.ssl.key-store」に反映すること。
+上記の各コマンドで、生成されるファイル名は変更しても良いが、「sample.p12」を変更した場合には「./src/main/resources/application.properties」の「server.ssl.key-store」に反映すること。
