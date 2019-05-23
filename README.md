@@ -39,7 +39,7 @@ Note: IPアドレスの「10.0.2.2」とは、PCと接続したAndroidデバイ�
 クライアントID、出品者ID、アクセスキーID、シークレットアクセスキーを、merchant.propertiesファイルに設定します。  
 merchant.propertiesは「./src/main/resources」の下に置く必要がありますが、この時点ではまだ配置されていません。  
 プロジェクトのroot directory直下に雛形の「merchant.properties」が置いてあるので、こちらを上記「./src/main/resources」の下にコピーします。  
-こちらを開くと、中は下記のようになっています。
+コピーしたファイルを開くと、中は下記のようになっています。
 ```
 client.id=amzn1.application-xxx-xxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 seller.id=XXXXXXXXXXXXXX
