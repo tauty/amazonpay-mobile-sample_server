@@ -113,3 +113,5 @@ Androidではセキュリティのため、PINを設定しないとSSL証明書�
 あとはEmulator上でサンプルアプリを立ち上げて動作をご確認ください。
 AndroidのNativeのアプリからAmazonPayで購入するサンプルと、WebViewからAmazonPayで購入するサンプルの、両方の動作をご確認いただけます。
 
+# 本サンプルアプリのflow
+./flow.xlsx 参照
