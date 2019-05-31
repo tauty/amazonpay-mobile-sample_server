@@ -43,7 +43,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <!-- ApayController#thanksから受け取ったorder.itemsの情報を表示 -->
+                        <!-- AmazonPayController#thanksから受け取ったorder.itemsの情報を表示 -->
                         <tr th:each="item : ${order.items}" th:object="${item}">
                             <td><img class="confirmation-item" src="./img/item0010.jpg" th:src="|./img/*{itemId}.jpg|">
                             </td>
@@ -56,7 +56,7 @@
                         </tbody>
                     </table>
 
-                    <!-- ApayController#thanksから受け取ったorderの情報を表示 -->
+                    <!-- AmazonPayController#thanksから受け取ったorderの情報を表示 -->
                     <table class="table table-striped">
                         <tbody>
                         <tr>
@@ -94,7 +94,7 @@
                 <h5 class="card-header">お支払い金額</h5>
                 <div class="card-body" id="highlight2">
 
-                    <!-- ApayController#thanksから受け取ったorderの情報を表示 -->
+                    <!-- AmazonPayController#thanksから受け取ったorderの情報を表示 -->
                     <table class="table table-striped">
                         <tbody>
                         <tr>

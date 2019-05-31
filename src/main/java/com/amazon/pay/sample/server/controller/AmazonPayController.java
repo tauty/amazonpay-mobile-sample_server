@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Controller
-public class ApayController {
+public class AmazonPayController {
 
     /**
      * merchant.propertiesからの読み込み

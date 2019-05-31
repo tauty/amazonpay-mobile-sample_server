@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class ApayRestController {
+public class AmazonPayRestController {
 
     /**
      * merchant.propertiesからの読み込み

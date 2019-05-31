@@ -32,7 +32,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <!-- ApayController#createOrderから受け取ったorder.itemsの情報を表示 -->
+                    <!-- AmazonPayController#createOrderから受け取ったorder.itemsの情報を表示 -->
                     <tr th:each="item : ${order.items}" th:object="${item}">
                         <td><img class="confirmation-item" src="./img/item0010.jpg" th:src="|./img/*{itemId}.jpg|">
                         </td>

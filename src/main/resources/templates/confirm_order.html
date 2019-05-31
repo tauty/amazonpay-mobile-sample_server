@@ -70,7 +70,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <!-- ApayController#confirmOrderから受け取ったorder.itemsの情報を表示 -->
+                        <!-- AmazonPayController#confirmOrderから受け取ったorder.itemsの情報を表示 -->
                         <tr th:each="item : ${order.items}" th:object="${item}">
                             <td><img class="confirmation-item" src="./img/item0010.jpg" th:src="|./img/*{itemId}.jpg|">
                             </td>
@@ -95,7 +95,7 @@
                 <h5 class="card-header">お支払い金額</h5>
                 <div class="card-body" id="highlight2">
 
-                    <!-- ApayController#confirmOrderから受け取ったorderの情報を表示 -->
+                    <!-- AmazonPayController#confirmOrderから受け取ったorderの情報を表示 -->
                     <table class="table table-striped">
                         <tbody>
                         <tr>
@@ -140,7 +140,7 @@
 
                     <div>
                         <form method="post" action="purchase" id="purchase_form">
-                            <!-- ApayController#confirmOrderから受け取ったtokenの情報を埋め込む -->
+                            <!-- AmazonPayController#confirmOrderから受け取ったtokenの情報を埋め込む -->
                             <input type="hidden" id="token" name="token" value="ecde72b9-3e10-45bf-ab45-a1833751c37b"
                                    th:value="${token}">
                             <input type="hidden" id="access_token" name="accessToken">
