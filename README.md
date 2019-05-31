@@ -1,3 +1,9 @@
+# 本サンプルアプリについて
+## Native版
+![native_flow](img/native.gif)
+## WebView版
+![native_flow](img/webview.gif)
+
 # 本サンプルアプリのインストール方法
 
 ## clone the projects
