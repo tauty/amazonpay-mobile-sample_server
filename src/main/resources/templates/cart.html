@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en" class="gr__s3-ap-northeast-1_amazonaws_com">
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate" />
+
     <title>Amazon Pay Sample</title>
 
     <!-- Bootstrap core CSS -->
@@ -42,19 +44,21 @@
                     </tr>
                     </tbody>
                 </table>
-
             </div>
         </div>
     </div>
 </div>
-
-<input type="image" src="./img/btn_amazon.png" onclick="toAmazonPay()">
+<div style="text-align:center">
+    <input type="image" src="./img/btn_amazon.png" id="amzn_button">
+</div>
 
 </body>
 <script type="text/javascript">
-    function toAmazonPay() {
-        // ApayController#createOrderから受け取ったtokenを埋め込んだintentを送信して、AmazonPayActivityを起動する.
+document.getElementById('amzn_button').addEventListener(
+    'click',
+    function() {
         location.href = "intent://amazon_pay_host#Intent;package=com.amazon.pay.sample.android;scheme=amazon_pay_schema;S.token=[[${token}]];end;";
     }
+);
 </script>
 </html>

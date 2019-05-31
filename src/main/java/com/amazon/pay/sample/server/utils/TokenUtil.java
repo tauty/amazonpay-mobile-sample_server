@@ -41,6 +41,15 @@ public class TokenUtil {
     }
 
     /**
+     * パラメタのtokenに紐付けられた受注IDが存在するか判定する.
+     * @param token 受注Objectアクセス用のtoken
+     * @return 受注IDが存在するときtrue, 削除されていればfalse
+     */
+    public static boolean exists(String token) {
+        return CacheMock.get(token) != null;
+    }
+
+    /**
      * パラメタのtokenに紐付けられた受注IDを削除する.
      * @param token 受注Objectアクセス用のtoken
      * @return 削除された受注ID

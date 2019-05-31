@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en" class="gr__s3-ap-northeast-1_amazonaws_com">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="">
-<meta name="author" content="">
-<meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0">
-<title>注文確認ページ：Amazon Payデモサイト</title>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0">
+    <meta name="google" content="notranslate" />
 
-<!-- Bootstrap core CSS -->
-<link href="./css/bootstrap.min.css" rel="stylesheet">
+    <title>注文確認ページ：Amazon Payデモサイト</title>
 
-<!-- Custom styles for this template -->
-<link href="./css/shop-confirmation.css" rel="stylesheet">
-<script type="text/javascript">
+    <!-- Bootstrap core CSS -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="./css/shop-confirmation.css" rel="stylesheet">
+    <script type="text/javascript">
       function getURLParameter(name, source) {
           return decodeURIComponent((new RegExp('[?|&amp;|#]' + name + '=' +
                           '([^&;]+?)(&|#|;|$)').exec(source) || [, ""])[1].replace(/\+/g, '%20')) || null;
@@ -20,11 +23,14 @@
       var error = getURLParameter("error", location.search);
       if (typeof error === 'string' && error.match(/^access_denied/)) {
         console.log('Amazonアカウントでのサインインをキャンセルされたため、戻る');
+
+        // TODO 直す
         window.location.href = 'shop-cart.html';
       }
-</script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
 </head>
 
@@ -133,15 +139,13 @@
                     </div>
 
                     <div>
-                        <form method="post" action="purchase" name="purchase_form">
+                        <form method="post" action="purchase" id="purchase_form">
                             <!-- ApayController#confirmOrderから受け取ったtokenの情報を埋め込む -->
                             <input type="hidden" id="token" name="token" value="ecde72b9-3e10-45bf-ab45-a1833751c37b"
                                    th:value="${token}">
                             <input type="hidden" id="access_token" name="accessToken">
                             <input type="hidden" id="order_reference_id" name="orderReferenceId">
-                            <button onclick="document.purchase_form.submit()" id="purchase_button"
-                                    class="btn btn-info btn-lg btn-block" disabled>購　入
-                            </button>
+                            <button id="purchase_button" class="btn btn-info btn-lg btn-block" disabled>購　入</button>
                         </form>
                     </div>
 
@@ -337,6 +341,15 @@
             }
           }).bind("walletWidgetDiv");
       }
+
+      document.getElementById('purchase_button').addEventListener(
+          'click',
+          function() {
+              this.disabled = true;
+              document.getElementById('purchase_form').submit();
+          }
+      );
+
 
 </script>
 

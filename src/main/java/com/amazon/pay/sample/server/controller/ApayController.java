@@ -108,6 +108,9 @@ public class ApayController {
     public String button(@RequestParam String token, HttpServletResponse response, Model model) {
         System.out.println("[button] " + token);
 
+        // tokenが削除済みの場合(購入処理後、「戻る」で戻ってきてAmazonPayボタンがクリックされた場合)、エラーとする.
+        if(!TokenUtil.exists(token)) return "error";
+
         Cookie cookie = new Cookie("token", token);
         cookie.setSecure(true);
         response.addCookie(cookie);
