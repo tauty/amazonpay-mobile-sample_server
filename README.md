@@ -1,10 +1,40 @@
-# 本サンプルアプリについて
-## Native版
-![native_flow](img/native.gif)
-## WebView版
-![native_flow](img/webview.gif)
+# Amazon Pay モバイル サンプルアプリについて
+SmartPhone上でAmazon Payを使って商品を購入するアプリの、サンプル実装を提供しています。  
+技術的には、Amazon Payボタン・住所選択ウィジェット・支払い方法選択ウィジェットなどの画面部品をアプリから起動したブラウザ上で表示して決済を行なっており、決済部分はHTML + CSS + JavaScriptで実装されています。  
+通常のPC上での実装とほぼ同じ方式で決済が実現できるため、学習コストの節約・コードのメンテナンスビリティの向上といった効果が見込めます。  
+現時点ではAndroid向けの実装のみ、下記の２種類提供しています。  
 
-# 本サンプルアプリのインストール方法
+## Android Native版
+通常のAndroidアプリ向けの実装サンプルです。  
+アプリ側で商品の購入数を選んで受注情報を作成し、Chrome Custom Tabsを起動してAmazon Payへのログイン・住所＆支払い方法の選択・購入を実施し、またアプリ側に戻って購入完了画面を表示します。  
+
+### 動作環境
+Android 7以降: Google Chrome 64以降  
+[参考] https://pay.amazon.com/jp/help/202030010
+
+### 画面動作
+![native_flow](img/native.gif)
+
+### 詳細フロー
+./flow.xlsx の「Native」タブ参照。  
+※ 同flowには各処理のURL, 処理するClass名、HTMLテンプレート名なども記載されているので、サンプルコードを読む時にもご参照ください。
+
+## Android WebView版
+WebView(アプリ内ブラウザ)を使ったアプリ向けの実装サンプルです。  
+基本的な流ればNative版と同じで、WebView内で商品の購入数を選んで受注情報を作成し、Chrome Custom Tabsを起動してAmazon Payへのログイン・住所＆支払い方法の選択・購入を実施し、またアプリ側に戻って購入完了画面を表示します。  
+
+### 動作環境
+Android 7以降: Google Chrome 64以降  
+[参考] https://pay.amazon.com/jp/help/202030010
+
+### 画面動作
+![webview_flow](img/webview.gif)
+
+### 詳細フロー
+./flow.xlsx の「WebView」タブ参照。  
+※ 同flowには各処理のURL, 処理するClass名、HTMLテンプレート名なども記載されているので、サンプルコードを読む時にもご参照ください。
+
+# インストール
 
 ## clone the projects
 まずは、server側のbackendにあたる本プロジェクトをcloneしてください。  
@@ -58,11 +88,9 @@ secret.key=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #### bootRun
 Gradle Viewを開いて「Tasks」 →　「application」 →　「bootRun」より起動してください。
 ![intellij-project](img/intellij_project.png)
-下記のようなログが表示されれば無事に起動しています。
-```
-2019-05-20 12:57:12.612  INFO 75240 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8443 (https) with context path ''
-2019-05-20 12:57:12.615  INFO 75240 --- [           main] c.a.p.s.s.AmazonPaySampleApplication     : Started AmazonPaySampleApplication in 4.149 seconds (JVM running for 4.901)
-```
+
+下記のようなログが表示されれば無事に起動しています。  
+![intellij-page](img/intellij_log.png)
 
 試しに、https://localhost:8443/order.html にアクセスしてみてください。セキュリティの警告が出ますが、無視して進めると下記画面が表示されるはずです。  
 ![intellij-page](img/intellij_browser.png)
@@ -118,6 +146,3 @@ Androidではセキュリティのため、PINを設定しないとSSL証明書�
 
 あとはEmulator上でサンプルアプリを立ち上げて動作をご確認ください。
 AndroidのNativeのアプリからAmazonPayで購入するサンプルと、WebViewからAmazonPayで購入するサンプルの、両方の動作をご確認いただけます。
-
-# 本サンプルアプリのflow
-./flow.xlsx 参照
