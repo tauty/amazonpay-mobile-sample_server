@@ -33,5 +33,15 @@ openssl pkcs12 -export -in sample.crt -inkey sample.key -out sample.p12
 #   passwordの設定が求められる。設定した値は「./src/main/resources/application.properties」の「server.ssl.key-store-password」に反映する。
 ```
 
+## 生成した証明書ファイルをDownload用ディレクトリへ移動
+```sh
+# sample.crtの移動(current directoryが./sslと想定)
+mv sample.crt ../src/main/resources/static/crt/
+
+# sample.der.crtの移動(current directoryが./sslと想定)
+mv sample.der.crt ../src/main/resources/static/crt/
+```
+
 ## Note
 上記の各コマンドで、生成されるファイル名は変更しても良いが、「sample.p12」を変更した場合には「./src/main/resources/application.properties」の「server.ssl.key-store」に反映すること。
+また、./README.md の「2. SSL自己証明書のDownload & Install」の内容も適時読み替えること。

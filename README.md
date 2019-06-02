@@ -136,14 +136,20 @@ Androidではセキュリティのため、PINを設定しないとSSL証明書�
 参考までに、代表的な設定画面の開き方としては、アプリ一覧アイコンをクリックして選択する、ホーム画面で下からスワイプしてアプリ一覧を出して選択する、などがあります。*  
 <img src="img/emu_pin.png" width="300">  
 
-2. SSL自己証明書のInstall  
-同じくセキュリティの設定より、「認証情報ストレージ(Encryption & Credentials)」→「SDカードからインストール(Install from SD card)」。  
-<img src="img/emu_download.png" width="300">  
-このEmulatorに、server側のプロジェクトの「./ssl/sample.der.crt」をDrag & Dropします。  
-<img src="img/emu_downloaded.png" width="300">  
-表示された証明書ファイルをダブルクリックするとPINを聞かれるので、先ほど設定した値を入力します。
+2. SSL自己証明書のDownload & Install  
+Chromeを立ち上げ、下記のURLにアクセスします。  
+https://10.0.2.2:8443/crt/sample.der.crt  
+下記のように警告が出るので、「ADVANCED」→「PROCEED TO 10.0.2.2(UNSAFE)」  
+<img src="img/emu_warn.png" width="300">  
+「CONTINUE」  
+<img src="img/emu_accept-download.png" width="300">  
+「ALLOW」  
+<img src="img/emu_allow-chrome.png" width="300">  
+「DOWNLOAD」  
+<img src="img/emu_download-crt.png" width="300">  
+PINを聞かれるので、先ほど設定した値を入力します。  
+表示された証明書Install画面にて、名前の欄に適当な名前を入力し、「VPN and apps」が選択されていることを確認して、「OK」をクリックすればインストール完了です。  
 <img src="img/emu_install.png" width="300">  
-名前の欄に適当な名前を入力し、「VPN and apps」が選択されていることを確認して、「OK」をクリックすればインストール完了です。
 
 あとはEmulator上でサンプルアプリを立ち上げて動作をご確認ください。
 AndroidのNativeのアプリからAmazonPayで購入するサンプルと、WebViewからAmazonPayで購入するサンプルの、両方の動作をご確認いただけます。
