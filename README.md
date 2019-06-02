@@ -86,7 +86,8 @@ secret.key=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 なお、ここで編集した「./src/main/resources/merchant.properties」は、「.gitignore」という仕組みを用いてgitには登録されないよう設定されています。よってこちらはcommitもpushもされませんので、入力した内容が漏洩することはありません。
 
 #### bootRun
-Gradle Viewを開いて「Tasks」 →　「application」 →　「bootRun」より起動してください。
+Gradle Viewを開いて「Tasks」 →　「application」 →　「bootRun」より起動してください。  
+※ Gradle Viewが表示されていない場合は、メニューの「View」→「Tool Window」→「Gradle View」からOpenしてください。
 ![intellij-project](img/intellij_project.png)
 
 下記のようなログが表示されれば無事に起動しています。  
@@ -121,7 +122,7 @@ API Level 28の「Pie」を選んで、「Next」。
 「Finish」でVirtual Deviceの生成が開始されますので、数分お待ちください。  
 生成が完了すると、生成されたVirtual Deviceが選択できるようになるので、こちらを選択して「OK」。
 ![androidstudio-select-emu](img/android_select_emu.png)
-Emulatorが立ち上がり、サンプルアプリが起動します。  
+Emulatorが立ち上がり、サンプルアプリが起動します。(1〜2分かかります。)  
 <img src="img/emu_start.png" width="300">
 
 #### install SSL self-certification
