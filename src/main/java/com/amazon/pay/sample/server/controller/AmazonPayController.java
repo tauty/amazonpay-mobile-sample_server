@@ -21,10 +21,7 @@ import com.amazon.pay.types.Region;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -67,8 +64,8 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
     @PostMapping("/createOrder")
-    public String createOrder(@RequestParam int hd8, @RequestParam int hd10, Model model) {
-
+    public String createOrder(@RequestHeader("User-Agent") String userAgent, @RequestParam int hd8, @RequestParam int hd10, Model model) {
+        System.out.println("[createOrder] " + userAgent + ", " + hd8 + ", " + hd10);
         // 受注Objectの生成
         Order order = new Order();
         order.items = new ArrayList<>();
@@ -88,6 +85,7 @@ public class AmazonPayController {
         String token = TokenUtil.storeByToken(myOrderId);
 
         // 画面生成templateへの値の受け渡し
+        model.addAttribute("isAndroid", userAgent.contains("Android"));
         model.addAttribute("order", order);
         model.addAttribute("token", token);
 
@@ -158,7 +156,7 @@ public class AmazonPayController {
      * @throws AmazonServiceException Amazon PayのAPIがthrowするエラー. 今回はサンプルなので特に何もしていないが、実際のコードでは正しく対処する.
      */
     @PostMapping("/purchase")
-    public String purchase(@RequestParam String token, @RequestParam String accessToken, @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
+    public String purchase(@RequestHeader("User-Agent") String userAgent, @RequestParam String token, @RequestParam String accessToken, @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
         System.out.println("[purchase] " + token + ", " + accessToken + ", " + orderReferenceId);
 
         Order order = DatabaseMock.getOrder(TokenUtil.get(token));
@@ -249,6 +247,7 @@ public class AmazonPayController {
         order.myOrderStatus = "AUTHORIZED";
         DatabaseMock.storeOrder(order);
 
+        model.addAttribute("isAndroid", userAgent.contains("Android"));
         model.addAttribute("token", token);
 
         return "purchase";
