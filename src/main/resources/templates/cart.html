@@ -31,7 +31,7 @@
                         <tr>
                             <th scope="col"></th>
                             <th scope="col">商品名</th>
-                            <th scope="col">単価(税込)</th>
+                            <th scope="col">単価</th>
                             <th scope="col" class="text-center">数量</th>
                             <th scope="col" class="text-right">小計</th>
                         </tr>
@@ -57,20 +57,21 @@
         <input type="image" src="./img/btn_amazon.png" id="amzn_button">
     </div>
 </div>
-
+<form id="other_form" method="get" action="button"><input type="hidden" name="token" th:value="${token}"></form>
 </body>
 <script type="text/javascript">
 document.getElementById('amzn_button').addEventListener(
     'click',
     function() {
-        // TODO Android/iOSの両方の対応
-        // location.href = "intent://amazon_pay_host#Intent;package=com.amazon.pay.sample.android;scheme=amazon_pay_schema;S.token=[[${token}]];end;";
-        // location.href = "[[${isAndroid} ? 'intent://amazon_pay_host#Intent;package=com.amazon.pay.sample.android;scheme=amazon_pay_schema;S.token=' + ${token} + ';end;' : 'webkit.messageHandlers.jsCallbackHandler.postMessage(\'' + ${token} + '\')']]";
-        // [[${isAndroid} ? 'location.href = "intent://amazon_pay_host#Intent;package=com.amazon.pay.sample.android;scheme=amazon_pay_schema;S.token=' + ${token} + ';end;"' : 'webkit.messageHandlers.jsCallbackHandler.postMessage("' + ${token} + '")']];
-        // webkit.messageHandlers.jsCallbackHandler.postMessage("[[${token}]]");
-        [( ${isAndroid}
-            ? 'location.href = "intent://amazon_pay_host#Intent;package=com.amazon.pay.sample.android;scheme=amazon_pay_schema;S.token=' + ${token} + ';end;"'
-            : 'webkit.messageHandlers.jsCallbackHandler.postMessage("' + ${token} + '")' )];
+        // Android: AmazonPayController#createOrderから受け取ったtokenを埋め込んで、intentを送信してAmazonPayActivityを起動する.
+        [( ${os} == 'android' ? 'location.href = "intent://amazon_pay_host#Intent;package=com.amazon.pay.sample.android;scheme=amazon_pay_schema;S.token=' + ${token} + ';end;";' )]
+
+        // iOS: AmazonPayController#createOrderから受け取ったtokenを埋め込んで、WebViewController#viewDidLoadで登録された
+        // CallbackのWebViewController#userContentControllerを起動する.
+        [( ${os} == 'ios'     ? 'webkit.messageHandlers.jsCallbackHandler.postMessage("' + ${token} + '");' )]
+
+        // その他: 通常の画面遷移
+        [( ${os} == 'other'   ? 'document.getElementById("other_form").submit();' )]
     }
 );
 

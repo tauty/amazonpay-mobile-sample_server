@@ -53,6 +53,7 @@ public class AmazonPayRestController {
      */
     @PostMapping("/registerOrder")
     public String registerOrder(@RequestParam(required = false) String token, @RequestParam int hd8, @RequestParam int hd10) {
+        System.out.println("[registerOrder] " + token + ", " + hd8 + ", " + hd10);
 
         // 受注Objectの生成/更新
         Order order = token == null ? new Order() : DatabaseMock.getOrder(TokenUtil.get(token));

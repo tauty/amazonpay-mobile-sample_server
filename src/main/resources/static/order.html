@@ -32,7 +32,7 @@
                             <tr>
                                 <th scope="col"></th>
                                 <th scope="col">商品名</th>
-                                <th scope="col">単価(税込)</th>
+                                <th scope="col">単価</th>
                                 <th scope="col" class="text-center">数量</th>
                             </tr>
                             </thead>
@@ -59,13 +59,6 @@
     </div>
 </div>
 
-<!-- form id="orderForm" method="post" action="createOrder">
-    Fire HD 8 - ¥8,980 <input type="text" id="hd8" name="hd8" value="1">個<br>
-    Fire HD 10 - ¥15,980 <input type="text" id="hd10" name="hd10" value="1">個<br>
-    <input type="submit" value="購入手続きへ"><br>
-    <span id="error" style="color:red"></span>
-</form -->
-
 <script type="text/javascript">
     let numRegEx = /^[0-9]+$/;
     document.getElementById('orderForm').addEventListener('submit', function(e) {
@@ -79,7 +72,6 @@
             e.preventDefault();
         }
     });
-
 </script>
 </body>
 </html>

@@ -14,6 +14,7 @@ import com.amazon.pay.response.parser.ConfirmOrderReferenceResponseData;
 import com.amazon.pay.response.parser.GetOrderReferenceDetailsResponseData;
 import com.amazon.pay.response.parser.SetOrderReferenceDetailsResponseData;
 import com.amazon.pay.sample.server.storage.DatabaseMock;
+import com.amazon.pay.sample.server.storage.DatabaseMock.Item;
 import com.amazon.pay.sample.server.storage.DatabaseMock.Order;
 import com.amazon.pay.sample.server.utils.TokenUtil;
 import com.amazon.pay.types.CurrencyCode;
@@ -70,10 +71,10 @@ public class AmazonPayController {
         Order order = new Order();
         order.items = new ArrayList<>();
         if (hd8 > 0) {
-            order.items.add(new DatabaseMock.Item("item0008", "Fire HD8", hd8, 8980));
+            order.items.add(new Item("item0008", "Fire HD8", hd8, 8980));
         }
         if (hd10 > 0) {
-            order.items.add(new DatabaseMock.Item("item0010", "Fire HD10", hd10, 15980));
+            order.items.add(new Item("item0010", "Fire HD10", hd10, 15980));
         }
         order.price = order.items.stream().mapToLong(item -> item.summary).sum();
         order.priceTaxIncluded = (long) (1.08 * order.price);
@@ -85,7 +86,7 @@ public class AmazonPayController {
         String token = TokenUtil.storeByToken(myOrderId);
 
         // 画面生成templateへの値の受け渡し
-        model.addAttribute("isAndroid", userAgent.contains("Android"));
+        model.addAttribute("os", userAgent.contains("Android") ? "android" : userAgent.contains("iP") ? "ios" : "other");
         model.addAttribute("order", order);
         model.addAttribute("token", token);
 
@@ -247,7 +248,7 @@ public class AmazonPayController {
         order.myOrderStatus = "AUTHORIZED";
         DatabaseMock.storeOrder(order);
 
-        model.addAttribute("isAndroid", userAgent.contains("Android"));
+        model.addAttribute("os", userAgent.contains("Android") ? "android" : userAgent.contains("iP") ? "ios" : "other");
         model.addAttribute("token", token);
 
         return "purchase";
@@ -265,16 +266,6 @@ public class AmazonPayController {
         System.out.println("[thanks] " + token);
         model.addAttribute("order", DatabaseMock.getOrder(TokenUtil.remove(token)));
         return "thanks";
-    }
-
-    /**
-     * テスト用URL. 通常のPCのブラウザからアクセスできる.
-     *
-     * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
-     */
-    @GetMapping("/cart_pc")
-    public String cart_pc() {
-        return "cart_pc";
     }
 
     private String generateId() {
