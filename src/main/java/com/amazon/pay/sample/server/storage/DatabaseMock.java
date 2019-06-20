@@ -1,9 +1,13 @@
 package com.amazon.pay.sample.server.storage;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -44,7 +48,7 @@ public class DatabaseMock {
     public static class Order {
         public String myOrderId;
         public String myOrderStatus;
-        public List<Item> items = new ArrayList<>();
+        public List<Item> items;
         public long price;
         public long priceTaxIncluded;
         public long postage;
@@ -63,7 +67,13 @@ public class DatabaseMock {
         public String destinationPhone;
     }
 
-    private static final Map<String, Order> map = new ConcurrentHashMap<>();
+    /**
+     * Note: 本サンプルでは受注情報をメモリ上に保持するため、メモリが枯渇しないように念の為保持できる上限を定めている.
+     */
+    private static final Cache<String, Order> cache = CacheBuilder.newBuilder()
+            .maximumSize(10000)
+            .build();
+
     private static final AtomicLong atomicLong = new AtomicLong();
 
     /**
@@ -77,7 +87,7 @@ public class DatabaseMock {
             // 受注IDの採番
             order.myOrderId = "my-order-" + atomicLong.incrementAndGet();
         }
-        map.put(order.myOrderId, order);
+        cache.put(order.myOrderId, order);
         return order.myOrderId;
     }
 
@@ -87,7 +97,7 @@ public class DatabaseMock {
      * @return 受注Object
      */
     public static Order getOrder(String myOrderId) {
-        return map.get(myOrderId);
+        return cache.getIfPresent(myOrderId);
     }
 
 }

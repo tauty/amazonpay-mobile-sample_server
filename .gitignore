@@ -34,3 +34,7 @@ HELP.md
 
 ### Secret property ###
 src/main/resources/merchant.properties
+
+### Secret crt ###
+src/aws/resources/static/crt/*
+

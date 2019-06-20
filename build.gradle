@@ -1,6 +1,6 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.0.M1'
-	id 'java'
+    id 'org.springframework.boot' version '2.2.0.M1'
+    id 'java'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -10,25 +10,36 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
-	maven { url 'https://repo.spring.io/snapshot' }
-	maven { url 'https://repo.spring.io/milestone' }
+    mavenCentral()
+    maven { url 'https://repo.spring.io/snapshot' }
+    maven { url 'https://repo.spring.io/milestone' }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	compile group: 'com.amazon.pay', name: 'amazon-pay-java-sdk', version: '3.5.0'
-	compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
-	compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
-	compile group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.0'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    compile group: 'com.amazon.pay', name: 'amazon-pay-java-sdk', version: '3.5.0'
+    compile 'com.google.guava:guava:28.0-jre'
+
+    // In case you'd like to build this application with JDK9+
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
+    compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
+    compile group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.0'
+}
+
+// 環境毎の差分を反映させるための設定. gradleのbuildコマンドに「-Pprofile=aws」を付与すると、
+// 「src/aws/resources」に存在するファイルで上書きしてからbuildを実行する.
+sourceSets {
+    if (project.hasProperty("profile")) {
+        main.resources.srcDirs "src/$profile/resources"
+    }
 }

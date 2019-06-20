@@ -49,7 +49,7 @@ public class AmazonPayRestController {
      * @param token 受注Objectへのアクセス用token
      * @param hd8   Kindle File HD8の購入数
      * @param hd10  Kindle File HD10の購入数
-     * @return 受注Objectへのアクセス用token(※ ApayControllerと違い 、 画面生成template名ではなく直接ResponseのBodyを返却する)
+     * @return 受注Objectへのアクセス用token(Note: AmazonPayControllerと違い 、 画面生成template名ではなく直接ResponseのBodyを返却する)
      */
     @PostMapping("/registerOrder")
     public String registerOrder(@RequestParam(required = false) String token, @RequestParam int hd8, @RequestParam int hd10) {
@@ -82,7 +82,7 @@ public class AmazonPayRestController {
      * @param token            受注Objectへのアクセス用token
      * @param accessToken      Amazon Pay側の情報にアクセスするためのToken. ボタンWidgetクリック時に取得する.
      * @param orderReferenceId Amazon Pay側の受注管理番号.
-     * @return 計算した送料・総合計金額を含んだJSON (※ApayControllerと違い、画面生成template名ではなく直接ResponseのBodyを返却する)
+     * @return 計算した送料・総合計金額を含んだJSON (Note: AmazonPayControllerと違い、画面生成template名ではなく直接ResponseのBodyを返却する)
      * @throws AmazonServiceException Amazon PayのAPIがthrowするエラー. 今回はサンプルなので特に何もしていないが、実際のコードでは正しく対処する.
      */
     @PostMapping("/calc_postage")

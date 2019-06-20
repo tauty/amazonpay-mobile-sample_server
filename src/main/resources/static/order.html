@@ -60,7 +60,7 @@
 </div>
 
 <script type="text/javascript">
-    let numRegEx = /^[0-9]+$/;
+    let numRegEx = /^(0|[1-9][0-9]*)$/;
     document.getElementById('orderForm').addEventListener('submit', function(e) {
         let hd8 = document.getElementById('hd8').value;
         let hd10 = document.getElementById('hd10').value;

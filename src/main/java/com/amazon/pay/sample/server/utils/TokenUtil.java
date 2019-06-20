@@ -50,15 +50,6 @@ public class TokenUtil {
     }
 
     /**
-     * パラメタのtokenに紐付けられた受注IDを削除する.
-     * @param token 受注Objectアクセス用のtoken
-     * @return 削除された受注ID
-     */
-    public static String remove(String token) {
-        return CacheMock.remove(token);
-    }
-
-    /**
      * 受注Objectアクセス用のtokenを生成する.
      * tokenは推測困難であることが求められるので、下記の要件を満たす必要がある.
      * <ul>

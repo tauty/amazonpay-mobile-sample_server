@@ -264,7 +264,7 @@ public class AmazonPayController {
     @PostMapping("/thanks")
     public String thanks(@RequestParam String token, Model model) {
         System.out.println("[thanks] " + token);
-        model.addAttribute("order", DatabaseMock.getOrder(TokenUtil.remove(token)));
+        model.addAttribute("order", DatabaseMock.getOrder(TokenUtil.get(token)));
         return "thanks";
     }
 
