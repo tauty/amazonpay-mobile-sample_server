@@ -262,9 +262,10 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
     @PostMapping("/thanks")
-    public String thanks(@RequestParam String token, Model model) {
+    public String thanks(@RequestHeader("User-Agent") String userAgent, @RequestParam String token, Model model) {
         System.out.println("[thanks] " + token);
         model.addAttribute("order", DatabaseMock.getOrder(TokenUtil.get(token)));
+        model.addAttribute("os", userAgent.contains("Android") ? "android" : userAgent.contains("iP") ? "ios" : "other");
         return "thanks";
     }
 
