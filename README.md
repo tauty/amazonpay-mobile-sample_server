@@ -25,7 +25,7 @@ Android 7以降: Google Chrome 64以降
 ### WebView版
 WebView(アプリ内ブラウザ)を使ったアプリ向けの実装サンプルです。  
 基本的な流ればNative版と同じで、WebView内で商品の購入数を選んで受注情報を作成し、Chrome Custom Tabsを起動してAmazon Payへのログイン・住所＆支払い方法の選択・購入を実施し、またアプリ側に戻って購入完了画面を表示します。  
-※ Amazon Payではセキュリティ確保のとため、URLを隠したり偽装したりできてしまうWebView上でのログイン処理を禁止しております。そのため、本サンプルのようにChrome Custom Tabsへ処理を飛ばす必要があります。
+※ Amazon Payではセキュリティ確保のため、URLを隠したり偽装したりできてしまうWebView上でのログイン処理を原則禁止しております。そのため、本サンプルのようにChrome Custom Tabsへ処理を飛ばす必要があります。
 
 #### 動作環境
 Android 7以降: Google Chrome 64以降  
@@ -49,7 +49,7 @@ iOS バージョン11.2以降: Safari Mobile 11以降
 ### WebView版
 WebView(アプリ内ブラウザ)を使ったアプリ向けの実装サンプルです。  
 基本的な流ればNative版と同じで、WebView内で商品の購入数を選んで受注情報を作成し、SFSafariViewを起動してAmazon Payへのログイン・住所＆支払い方法の選択・購入を実施し、またアプリ側に戻って購入完了画面を表示します。  
-※ Amazon Payではセキュリティ確保のとため、URLを隠したり偽装したりできてしまうWebView上でのログイン処理を禁止しております。そのため、本サンプルのようにSFSafariViewへ処理を飛ばす必要があります。
+※ Amazon Payではセキュリティ確保のため、URLを隠したり偽装したりできてしまうWebView上でのログイン処理を原則禁止しております。そのため、本サンプルのようにSFSafariViewへ処理を飛ばす必要があります。
 
 #### 動作環境
 iOS バージョン11.2以降: Safari Mobile 11以降  
@@ -113,6 +113,6 @@ Gradle Viewを開いて「Tasks」 →　「application」 →　「bootRun」�
 試しに、https://localhost:8443/order.html にアクセスしてみてください。セキュリティの警告が出ますが、無視して進めると下記画面が表示されるはずです。  
 ![intellij-page](img/intellij_browser.png)
 
-なお、本サンプルアプリはPC上のブラウザでも動作します。
+なお、本サンプルアプリはPC上のブラウザでも動作しますので、アプリの動作の確認や挙動の理解にご活用ください。
 
-*Note: Android & iOSのインストールは、それぞれのプロジェクトのREADME.mdを参照してください。*
+*Note: Android & iOSについては、それぞれのプロジェクトのREADME.mdを参照してください。*
