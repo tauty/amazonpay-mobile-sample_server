@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Controller
@@ -64,10 +66,36 @@ public class AmazonPayController {
      * @param model 画面生成templateに渡す値を設定するObject
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
-    @PostMapping("/createOrder")
+    @PostMapping("/create_order")
     public String createOrder(@RequestHeader("User-Agent") String userAgent, @RequestParam int hd8, @RequestParam int hd10, Model model) {
         System.out.println("[createOrder] " + userAgent + ", " + hd8 + ", " + hd10);
+
         // 受注Objectの生成
+        String token = doCreateOrder(hd8, hd10);
+
+        // 画面生成templateへの値の受け渡し
+        model.addAttribute("os", userAgent.contains("Android") ? "android" : userAgent.contains("iP") ? "ios" : "other");
+        model.addAttribute("token", token);
+        model.addAttribute("order", DatabaseMock.getOrder(TokenUtil.get(token)));
+
+        return "cart";
+    }
+    /**
+     * NATIVEサンプル用Activityから非同期に呼び出されて、受注Objectを生成・保存する.
+     *
+     * @param hd8   Kindle File HD8の購入数
+     * @param hd10  Kindle File HD10の購入数
+     * @return 受注Objectへのアクセス用token
+     */
+    @ResponseBody
+    @PostMapping("/create_order_rest")
+    public String createOrderREST(@RequestParam int hd8, @RequestParam int hd10) {
+        System.out.println("[createOrderREST] " + hd8 + ", " + hd10);
+        return doCreateOrder(hd8, hd10);
+    }
+
+    private String doCreateOrder(int hd8, int hd10) {
+        // 受注Objectの生成/更新
         Order order = new Order();
         order.items = new ArrayList<>();
         if (hd8 > 0) {
@@ -80,17 +108,12 @@ public class AmazonPayController {
         order.priceTaxIncluded = (long) (1.08 * order.price);
         order.myOrderStatus = "CREATED";
 
-        // 受注Objectの保存と受注Objectへのアクセス用tokenの生成
-        // Note: tokenを用いる理由については、TokenUtilのJavadoc参照.
+        // 受注Objectの保存
         String myOrderId = DatabaseMock.storeOrder(order);
-        String token = TokenUtil.storeByToken(myOrderId);
 
-        // 画面生成templateへの値の受け渡し
-        model.addAttribute("os", userAgent.contains("Android") ? "android" : userAgent.contains("iP") ? "ios" : "other");
-        model.addAttribute("order", order);
-        model.addAttribute("token", token);
-
-        return "cart";
+        // 受注Objectへのアクセス用tokenの返却
+        // Note: tokenを用いる理由については、TokenUtilのJavadoc参照.
+        return TokenUtil.storeByToken(myOrderId);
     }
 
     /**
@@ -144,6 +167,59 @@ public class AmazonPayController {
         model.addAttribute("sellerId", sellerId);
 
         return "confirm_order";
+    }
+
+    /**
+     * 購入確定画面でアドレスWidgetで住所を選択した時にAjaxで非同期に呼び出されて、Amazon Pay APIから取得した住所情報より送料を計算する.
+     *
+     * @param token            受注Objectへのアクセス用token
+     * @param accessToken      Amazon Pay側の情報にアクセスするためのToken. ボタンWidgetクリック時に取得する.
+     * @param orderReferenceId Amazon Pay側の受注管理番号.
+     * @return 計算した送料・総合計金額を含んだJSON
+     * @throws AmazonServiceException Amazon PayのAPIがthrowするエラー. 今回はサンプルなので特に何もしていないが、実際のコードでは正しく対処する.
+     */
+    @ResponseBody
+    @PostMapping("/calc_postage")
+    public Map<String, String> calcPostage(@RequestParam String token, @RequestParam String orderReferenceId
+            , @RequestParam String accessToken) throws AmazonServiceException {
+        System.out.println("[calc_postage]: " + token + ", " + orderReferenceId + ", " + accessToken);
+
+        Config config = new PayConfig()
+                .withSellerId(sellerId)
+                .withAccessKey(accessKey)
+                .withSecretKey(secretKey)
+                .withCurrencyCode(CurrencyCode.JPY)
+                .withSandboxMode(true)
+                .withRegion(Region.JP);
+
+        Client client = new PayClient(config);
+
+        //--------------------------------------------
+        // Amazon Pay側のOrderReferenceの詳細情報の取得
+        //--------------------------------------------
+        GetOrderReferenceDetailsRequest request = new GetOrderReferenceDetailsRequest(orderReferenceId);
+        // request.setAddressConsentToken(paramMap.get("access_token")); // Note: It's old! should be removed!
+        request.setAccessToken(accessToken);
+        GetOrderReferenceDetailsResponseData response = client.getOrderReferenceDetails(request);
+
+        Order order = DatabaseMock.getOrder(TokenUtil.get(token));
+        order.postage = calcPostage(response);
+        order.totalPrice = order.priceTaxIncluded + order.postage;
+        DatabaseMock.storeOrder(order);
+
+        Map<String, String> map = new HashMap<>();
+        map.put("postage", comma(order.postage));
+        map.put("totalPrice", comma(order.totalPrice));
+        return map;
+    }
+
+    private long calcPostage(GetOrderReferenceDetailsResponseData response) {
+        String stateOrRegion = response.getDetails().getDestination().getPhysicalDestination().getStateOrRegion();
+        if (stateOrRegion.equals("沖縄県") || stateOrRegion.equals("北海道")) {
+            return 1080;
+        } else {
+            return 540;
+        }
     }
 
     /**
@@ -269,11 +345,22 @@ public class AmazonPayController {
         return "thanks";
     }
 
+
     private String generateId() {
         return String.valueOf(Math.abs(ThreadLocalRandom.current().nextLong()));
     }
 
     private String emptyIfNull(String s) {
         return s == null ? "" : s;
+    }
+
+    private String comma(long num) {
+        return comma(String.valueOf(num));
+    }
+
+    private String comma(String num) {
+        int index = num.length() - 3;
+        if (index <= 0) return num;
+        return comma(num.substring(0, index)) + "," + num.substring(index);
     }
 }

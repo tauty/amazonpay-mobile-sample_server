@@ -116,3 +116,5 @@ Gradle Viewを開いて「Tasks」 →　「application」 →　「bootRun」�
 なお、本サンプルアプリはPC上のブラウザでも動作しますので、アプリの動作の確認や挙動の理解にご活用ください。
 
 *Note: Android & iOSについては、それぞれのプロジェクトのREADME.mdを参照してください。*
+- Android: https://github.com/tauty/amazonpay-mobile-sample_android
+- iOS(iPhone, iPad): https://github.com/tauty/amazonpay-mobile-sample_ios
