@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0">
     <meta name="google" content="notranslate" />
 
+    <!-- ※ URLパラメタとして渡された受注Objectアクセス用のtokenを、Referrerから漏洩させないための指定。 -->
+    <meta name="referrer" content="origin" />
+
     <title>注文確認ページ：Amazon Payデモサイト</title>
 
     <!-- Bootstrap core CSS -->
@@ -14,8 +17,6 @@
 
     <!-- Custom styles for this template -->
     <link href="./css/shop-confirmation.css" rel="stylesheet">
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
 </head>
 
@@ -129,6 +130,7 @@
                 </div>
             </div>
 
+            <!-- PCのブラウザからのアクセスの場合、Topボタンを表示する. -->
             <form th:if="${os} == 'other'" method="get" action="order.html">
                 <input type="submit" value="Top" class="btn btn-info btn-lg btn-block"><br>
             </form>

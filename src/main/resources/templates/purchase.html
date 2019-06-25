@@ -15,7 +15,7 @@
     // Android: AmazonPayController#purchaseから受け取ったtokenを埋め込んでintentを送信して、ThanksActivityを起動する.
     [( ${os} == 'android' ? 'location.href = "intent://thanks_host#Intent;package=com.amazon.pay.sample.android;scheme=thanks_schema;S.token=' + ${token} + ';end;";' )]
 
-    // iOS: AmazonPayController#purchaseから受け取ったtokenを埋め込んで、Custom URL Schema(ディープリンク)を送信して、
+    // iOS: AmazonPayController#purchaseから受け取ったtokenを埋め込んで、Custom URL Scheme(ディープリンク)を送信して、
     // AppDelegate#applicationを経由してThanksControllerを起動する.
     [( ${os} == 'ios'     ? 'location.href = "amazonpay-mobile-sample-ios://thanks/?token=' + ${token} + '";' )]
 

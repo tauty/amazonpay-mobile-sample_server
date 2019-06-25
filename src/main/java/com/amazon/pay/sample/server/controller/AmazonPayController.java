@@ -80,8 +80,9 @@ public class AmazonPayController {
 
         return "cart";
     }
+
     /**
-     * NATIVEサンプル用Activityから非同期に呼び出されて、受注Objectを生成・保存する.
+     * NATIVEの受註登録画面から呼び出されて、受注Objectを生成・保存する.
      *
      * @param hd8   Kindle File HD8の購入数
      * @param hd10  Kindle File HD10の購入数
@@ -133,6 +134,7 @@ public class AmazonPayController {
         // tokenが削除済みの場合(購入処理後、「戻る」で戻ってきてAmazonPayボタンがクリックされた場合)、エラーとする.
         if(!TokenUtil.exists(token)) return "error";
 
+        // redirect処理でconfirm_orderに戻ってきたときにtokenが使用できるよう、Cookieに登録
         Cookie cookie = new Cookie("token", token);
         cookie.setSecure(true);
         response.addCookie(cookie);
@@ -153,10 +155,10 @@ public class AmazonPayController {
      */
     @GetMapping("/confirm_order")
     public String confirmOrder(@CookieValue(required = false) String token, HttpServletResponse response, Model model) {
-        if (token == null) return "dummy"; // dealt with the request Chrome Custom Tabs sometime reload this page.
+        if (token == null) return "dummy"; // Chrome Custom Tabsが本URLを勝手にreloadすることがあるので、その対策.
         System.out.println("[confirm_order] " + token);
 
-        // Delete token cookie
+        // tokenのCookieからの削除
         Cookie cookie = new Cookie("token", token);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
@@ -223,7 +225,7 @@ public class AmazonPayController {
     }
 
     /**
-     * 購入確定画面から呼び出されて、購入処理を実行してThanks画面Activityを呼び出すIntentを送信する.
+     * 購入確定画面から呼び出されて、購入処理を実行してThanks画面へ遷移させる.
      *
      * @param token            受注Objectへのアクセス用token
      * @param accessToken      Amazon Pay側の情報にアクセスするためのToken. ボタンWidgetクリック時に取得する.
