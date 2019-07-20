@@ -59,22 +59,40 @@ public class AmazonPayController {
     private String secretKey;
 
     /**
+     * 受注入力情報画面を表示.
+     *
+     * @param os    アクセス元のOS. android/ios/pc のどれか
+     * @param model 画面生成templateに渡す値を設定するObject
+     * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
+     */
+    @GetMapping("/{os}/order")
+    public String order(@PathVariable String os, Model model) {
+        System.out.println("[order] " + os);
+
+        // 画面生成templateへの値の受け渡し
+        model.addAttribute("os", os);
+
+        return "order";
+    }
+
+    /**
      * order.htmlから呼び出されて、受注Objectを生成・保存する.
      *
+     * @param os    アクセス元のOS. android/ios/pc のどれか
      * @param hd8   Kindle File HD8の購入数
      * @param hd10  Kindle File HD10の購入数
      * @param model 画面生成templateに渡す値を設定するObject
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
-    @PostMapping("/create_order")
-    public String createOrder(@RequestHeader("User-Agent") String userAgent, @RequestParam int hd8, @RequestParam int hd10, Model model) {
-        System.out.println("[createOrder] " + userAgent + ", " + hd8 + ", " + hd10);
+    @PostMapping("/{os}/create_order")
+    public String createOrder(@PathVariable String os, @RequestParam int hd8, @RequestParam int hd10, Model model) {
+        System.out.println("[createOrder] " + os + ", " + hd8 + ", " + hd10);
 
         // 受注Objectの生成
-        String token = doCreateOrder(hd8, hd10);
+        String token = doCreateOrder(os, hd8, hd10);
 
         // 画面生成templateへの値の受け渡し
-        model.addAttribute("os", userAgent.contains("Android") ? "android" : userAgent.contains("iP") ? "ios" : "other");
+        model.addAttribute("os", os);
         model.addAttribute("token", token);
         model.addAttribute("order", DatabaseMock.getOrder(TokenUtil.get(token)));
 
@@ -84,20 +102,22 @@ public class AmazonPayController {
     /**
      * NATIVEの受註登録画面から呼び出されて、受注Objectを生成・保存する.
      *
-     * @param hd8   Kindle File HD8の購入数
-     * @param hd10  Kindle File HD10の購入数
+     * @param os    アクセス元のOS. android/ios/pc のどれか
+     * @param hd8  Kindle File HD8の購入数
+     * @param hd10 Kindle File HD10の購入数
      * @return 受注Objectへのアクセス用token
      */
     @ResponseBody
-    @PostMapping("/create_order_rest")
-    public String createOrderREST(@RequestParam int hd8, @RequestParam int hd10) {
-        System.out.println("[createOrderREST] " + hd8 + ", " + hd10);
-        return doCreateOrder(hd8, hd10);
+    @PostMapping("/{os}/create_order_rest")
+    public String createOrderREST(@PathVariable String os, @RequestParam int hd8, @RequestParam int hd10) {
+        System.out.println("[createOrderREST] " + os + ", " + hd8 + ", " + hd10);
+        return doCreateOrder(os, hd8, hd10);
     }
 
-    private String doCreateOrder(int hd8, int hd10) {
+    private String doCreateOrder(String os, int hd8, int hd10) {
         // 受注Objectの生成/更新
         Order order = new Order();
+        order.os = os;
         order.items = new ArrayList<>();
         if (hd8 > 0) {
             order.items.add(new Item("item0008", "Fire HD8", hd8, 8980));
@@ -132,7 +152,7 @@ public class AmazonPayController {
         System.out.println("[button] " + token);
 
         // tokenが削除済みの場合(購入処理後、「戻る」で戻ってきてAmazonPayボタンがクリックされた場合)、エラーとする.
-        if(!TokenUtil.exists(token)) return "error";
+        if (!TokenUtil.exists(token)) return "error";
 
         // redirect処理でconfirm_orderに戻ってきたときにtokenが使用できるよう、Cookieに登録
         Cookie cookie = new Cookie("token", token);
@@ -235,7 +255,7 @@ public class AmazonPayController {
      * @throws AmazonServiceException Amazon PayのAPIがthrowするエラー. 今回はサンプルなので特に何もしていないが、実際のコードでは正しく対処する.
      */
     @PostMapping("/purchase")
-    public String purchase(@RequestHeader("User-Agent") String userAgent, @RequestParam String token, @RequestParam String accessToken, @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
+    public String purchase(@RequestParam String token, @RequestParam String accessToken, @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
         System.out.println("[purchase] " + token + ", " + accessToken + ", " + orderReferenceId);
 
         Order order = DatabaseMock.getOrder(TokenUtil.get(token));
@@ -326,7 +346,7 @@ public class AmazonPayController {
         order.myOrderStatus = "AUTHORIZED";
         DatabaseMock.storeOrder(order);
 
-        model.addAttribute("os", userAgent.contains("Android") ? "android" : userAgent.contains("iP") ? "ios" : "other");
+        model.addAttribute("os", order.os);
         model.addAttribute("token", token);
 
         return "purchase";
@@ -340,10 +360,13 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
     @PostMapping("/thanks")
-    public String thanks(@RequestHeader("User-Agent") String userAgent, @RequestParam String token, Model model) {
+    public String thanks(@RequestParam String token, Model model) {
         System.out.println("[thanks] " + token);
-        model.addAttribute("order", DatabaseMock.getOrder(TokenUtil.get(token)));
-        model.addAttribute("os", userAgent.contains("Android") ? "android" : userAgent.contains("iP") ? "ios" : "other");
+
+        Order order = DatabaseMock.getOrder(TokenUtil.get(token));
+        model.addAttribute("order", order);
+        model.addAttribute("os", order.os);
+
         return "thanks";
     }
 

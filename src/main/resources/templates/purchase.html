@@ -20,7 +20,7 @@
     [( ${os} == 'ios'     ? 'location.href = "amazonpay-mobile-sample-ios://thanks/?token=' + ${token} + '";' )]
 
     // other: 通常の遷移
-    [( ${os} == 'other'   ? 'document.getElementById("other_form").submit();' )]
+    [( ${os} == 'pc'   ? 'document.getElementById("other_form").submit();' )]
 
 </script>
 </html>

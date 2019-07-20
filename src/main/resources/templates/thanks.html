@@ -131,7 +131,7 @@
             </div>
 
             <!-- PCのブラウザからのアクセスの場合、Topボタンを表示する. -->
-            <form th:if="${os} == 'other'" method="get" action="order.html">
+            <form th:if="${os} == 'pc'" method="get" action="pc/order">
                 <input type="submit" value="Top" class="btn btn-info btn-lg btn-block"><br>
             </form>
 

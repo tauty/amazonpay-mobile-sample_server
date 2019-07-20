@@ -48,6 +48,7 @@ public class DatabaseMock {
     public static class Order {
         public String myOrderId;
         public String myOrderStatus;
+        public String os;
         public List<Item> items;
         public long price;
         public long priceTaxIncluded;
