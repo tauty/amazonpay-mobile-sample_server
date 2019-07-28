@@ -70,6 +70,10 @@ document.getElementById('amzn_button').addEventListener(
         // CallbackのWebViewController#userContentControllerを起動する.
         [( ${os} == 'ios'     ? 'webkit.messageHandlers.jsCallbackHandler.postMessage("' + ${token} + '");' )]
 
+        // iOS - UIWebView版: AmazonPayController#createOrderから受け取ったtokenを埋め込んで、Custom URL Scheme(ディープリンク)を送信して、
+        // AppDelegate#applicationを起動する.
+        [( ${os} == 'ios-ui'     ? 'location.href = "amazonpay-mobile-sample-ios://ui-to-safari-view/?token=' + ${token} + '";' )]
+
         // PC: 通常の画面遷移
         [( ${os} == 'pc'   ? 'document.getElementById("other_form").submit();' )]
     }

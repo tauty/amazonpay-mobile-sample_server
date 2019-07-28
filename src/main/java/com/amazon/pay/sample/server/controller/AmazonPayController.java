@@ -89,7 +89,7 @@ public class AmazonPayController {
         System.out.println("[createOrder] " + os + ", " + hd8 + ", " + hd10);
 
         // 受注Objectの生成
-        String token = doCreateOrder(os, hd8, hd10);
+        String token = doCreateOrder(!os.contains("-") ? os : os.substring(0, os.indexOf('-')), hd8, hd10);
 
         // 画面生成templateへの値の受け渡し
         model.addAttribute("os", os);
@@ -115,6 +115,7 @@ public class AmazonPayController {
     }
 
     private String doCreateOrder(String os, int hd8, int hd10) {
+
         // 受注Objectの生成/更新
         Order order = new Order();
         order.os = os;
