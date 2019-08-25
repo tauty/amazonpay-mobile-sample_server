@@ -45,7 +45,7 @@ public class DatabaseMock {
      * 受注Objectを保持するテーブルを想定したclass.
      * Itemクラスのレコード(インスタンス)と１対多である.
      */
-    public static class Order {
+    public static class Order implements Cloneable{
         public String myOrderId;
         public String myOrderStatus;
         public String os;
@@ -66,6 +66,17 @@ public class DatabaseMock {
         public String destinationAddress2;
         public String destinationAddress3;
         public String destinationPhone;
+
+        @Override
+        public Order clone() {
+            try {
+                return (Order)super.clone();
+            } catch (CloneNotSupportedException e) {
+                // Unreachable...
+                e.printStackTrace();
+                return null;
+            }
+        }
     }
 
     /**

@@ -94,7 +94,7 @@ public class AmazonPayController {
         // 画面生成templateへの値の受け渡し
         model.addAttribute("os", os);
         model.addAttribute("token", token);
-        model.addAttribute("order", DatabaseMock.getOrder(TokenUtil.get(token)));
+        model.addAttribute("order", TokenUtil.get(token));
 
         return "cart";
     }
@@ -131,11 +131,11 @@ public class AmazonPayController {
         order.myOrderStatus = "CREATED";
 
         // 受注Objectの保存
-        String myOrderId = DatabaseMock.storeOrder(order);
+        DatabaseMock.storeOrder(order);
 
-        // 受注Objectへのアクセス用tokenの返却
+        // 受注Objectのcacheへの保存と、アクセス用tokenの返却
         // Note: tokenを用いる理由については、TokenUtilのJavadoc参照.
-        return TokenUtil.storeByToken(myOrderId);
+        return TokenUtil.storeByToken(order);
     }
 
     /**
@@ -156,7 +156,8 @@ public class AmazonPayController {
         if (!TokenUtil.exists(token)) return "error";
 
         // redirect処理でconfirm_orderに戻ってきたときにtokenが使用できるよう、Cookieに登録
-        Cookie cookie = new Cookie("token", token);
+        // Note: Session Fixation 対策に、tokenをこのタイミングで更新する.
+        Cookie cookie = new Cookie("token", TokenUtil.copy(token));
         cookie.setSecure(true);
         response.addCookie(cookie);
 
@@ -185,7 +186,7 @@ public class AmazonPayController {
         response.addCookie(cookie);
 
         model.addAttribute("token", token);
-        model.addAttribute("order", DatabaseMock.getOrder(TokenUtil.get(token)));
+        model.addAttribute("order", TokenUtil.get(token));
         model.addAttribute("clientId", clientId);
         model.addAttribute("sellerId", sellerId);
 
@@ -225,7 +226,7 @@ public class AmazonPayController {
         request.setAccessToken(accessToken);
         GetOrderReferenceDetailsResponseData response = client.getOrderReferenceDetails(request);
 
-        Order order = DatabaseMock.getOrder(TokenUtil.get(token));
+        Order order = TokenUtil.get(token);
         order.postage = calcPostage(response);
         order.totalPrice = order.priceTaxIncluded + order.postage;
         DatabaseMock.storeOrder(order);
@@ -259,7 +260,7 @@ public class AmazonPayController {
     public String purchase(@RequestParam String token, @RequestParam String accessToken, @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
         System.out.println("[purchase] " + token + ", " + accessToken + ", " + orderReferenceId);
 
-        Order order = DatabaseMock.getOrder(TokenUtil.get(token));
+        Order order = TokenUtil.get(token);
         order.orderReferenceId = orderReferenceId;
 
         Config config = new PayConfig()
@@ -364,7 +365,7 @@ public class AmazonPayController {
     public String thanks(@RequestParam String token, Model model) {
         System.out.println("[thanks] " + token);
 
-        Order order = DatabaseMock.getOrder(TokenUtil.get(token));
+        Order order = TokenUtil.get(token);
         model.addAttribute("order", order);
         model.addAttribute("os", order.os);
 

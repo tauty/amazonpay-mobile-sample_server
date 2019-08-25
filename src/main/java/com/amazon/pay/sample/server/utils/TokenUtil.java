@@ -1,14 +1,15 @@
 package com.amazon.pay.sample.server.utils;
 
 import com.amazon.pay.sample.server.storage.CacheMock;
+import com.amazon.pay.sample.server.storage.DatabaseMock;
 
 import java.util.UUID;
 
 /**
- * 受注Objectアクセス用のtokenを生成し、受注ObjectのIDである受注IDを管理するUtility.
+ * 受注Objectアクセス用のtokenを生成し、受注Objectを管理するUtility.
  *
  * <pre>
- *     [受註IDをそのまま使わず、tokenを発行して管理する理由]
+ *     [アプリ-アプリ内ブラウザ間の処理では受註IDではなく、tokenを発行して管理する理由]
  *     一般に受注IDは重複しないことが主な要件であるため、「日付＋シーケンス番号」のような、
  *     採番された値を推測できる実装であることが多い.
  *     本サンプルでは受注を特定するためにtokenをURLパラメタやCookie, Intentのパラメタ等で
@@ -22,22 +23,31 @@ public class TokenUtil {
 
     /**
      * tokenを生成し、パラメタの受注IDと紐付けてから返却する.
-     * @param orderId 受注ID
+     * @param order 受注Object
      * @return token
      */
-    public static String storeByToken(String orderId) {
+    public static String storeByToken(DatabaseMock.Order order) {
         String token = createToken();
-        CacheMock.put(token, orderId);
+        CacheMock.put(token, order);
         return token;
     }
 
     /**
      * パラメタのtokenに紐付けられた受注IDを返却する.
      * @param token 受注Objectアクセス用のtoken
-     * @return 受注ID
+     * @return 受注Object
      */
-    public static String get(String token) {
+    public static DatabaseMock.Order get(String token) {
         return CacheMock.get(token);
+    }
+
+    /**
+     * パラメタのtokenに紐づいた受注Objectをコピーし、cacheに登録して新しいtokenを返却する.
+     * @param token 受注Objectアクセス用のtoken
+     * @return コピーされた受注Objectアクセス用token
+     */
+    public static String copy(String token) {
+        return storeByToken(CacheMock.get(token).clone());
     }
 
     /**

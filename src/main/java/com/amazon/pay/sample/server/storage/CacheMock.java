@@ -18,15 +18,15 @@ public class CacheMock {
      * Note: 本サンプルでは実装していないが、実際のシステムでは有効期限を超えてExpireしたtokenへのアクセスが
      * ありエラーとなった場合には、その旨をユーザに伝えるエラー画面を表示するべきである.
      */
-    private static final Cache<String, String> cache = CacheBuilder.newBuilder()
+    private static final Cache<String, DatabaseMock.Order> cache = CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.HOURS)
             .build();
 
-    public static String get(String key) {
+    public static DatabaseMock.Order get(String key) {
         return cache.getIfPresent(key);
     }
 
-    public static void put(String key, String value) {
+    public static void put(String key, DatabaseMock.Order value) {
         cache.put(key, value);
     }
 }
