@@ -69,7 +69,7 @@ public class TokenUtil {
      * ここで採用しているUUID v4のJDKによる実装は上記を満たしている.
      *   参考: https://docs.oracle.com/javase/jp/8/docs/api/java/util/UUID.html#randomUUID--
      * もし別の実装を採用する場合には、上記を満たしているか確認すること.<br/>
-     * Note: UUID v4の乱数部分の仕様では、生成に暗号論的な強度が十分な乱数を使うことを推奨しているもの、
+     * Note: UUID v4の乱数部分の仕様では、生成に暗号論的な強度が十分な乱数を使うことを推奨しているものの、
      * 規定はしていない.
      *   参考: https://tools.ietf.org/html/rfc4122#section-4.4
      * つまり実装によっては推測可能な乱数生成方法を採用している可能性もある. よって、JDK以外のUUID v4の
