@@ -161,6 +161,11 @@ public class AmazonPayController {
         cookie.setSecure(true);
         response.addCookie(cookie);
 
+        // 更新前のtokenも、APPに戻ったタイミングでの確認用に保持する
+        cookie = new Cookie("appToken", token);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+
         model.addAttribute("clientId", clientId);
         model.addAttribute("sellerId", sellerId);
 
@@ -176,16 +181,21 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
     @GetMapping("/confirm_order")
-    public String confirmOrder(@CookieValue(required = false) String token, HttpServletResponse response, Model model) {
+    public String confirmOrder(@CookieValue(required = false) String token, @CookieValue(required = false) String appToken, HttpServletResponse response, Model model) {
         if (token == null) return "dummy"; // Chrome Custom Tabsが本URLを勝手にreloadすることがあるので、その対策.
-        System.out.println("[confirm_order] " + token);
+        System.out.println("[confirm_order] token = " + token + ", appToken = " + appToken);
 
-        // tokenのCookieからの削除
+        // token & appToken のCookieからの削除
         Cookie cookie = new Cookie("token", token);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
+        cookie = new Cookie("appToken", appToken);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
         model.addAttribute("token", token);
+        model.addAttribute("appToken", appToken);
         model.addAttribute("order", TokenUtil.get(token));
         model.addAttribute("clientId", clientId);
         model.addAttribute("sellerId", sellerId);
@@ -257,8 +267,8 @@ public class AmazonPayController {
      * @throws AmazonServiceException Amazon PayのAPIがthrowするエラー. 今回はサンプルなので特に何もしていないが、実際のコードでは正しく対処する.
      */
     @PostMapping("/purchase")
-    public String purchase(@RequestParam String token, @RequestParam String accessToken, @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
-        System.out.println("[purchase] " + token + ", " + accessToken + ", " + orderReferenceId);
+    public String purchase(@RequestParam String token, @RequestParam String appToken, @RequestParam String accessToken, @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
+        System.out.println("[purchase] " + token + ", " + appToken + ", " + orderReferenceId + ", " + accessToken);
 
         Order order = TokenUtil.get(token);
         order.orderReferenceId = orderReferenceId;
@@ -350,6 +360,7 @@ public class AmazonPayController {
 
         model.addAttribute("os", order.os);
         model.addAttribute("token", token);
+        model.addAttribute("appToken", appToken);
 
         return "purchase";
     }

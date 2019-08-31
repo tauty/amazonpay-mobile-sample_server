@@ -141,6 +141,8 @@
                             <!-- AmazonPayController#confirmOrderから受け取ったtokenの情報を埋め込む -->
                             <input type="hidden" id="token" name="token" value="ecde72b9-3e10-45bf-ab45-a1833751c37b"
                                    th:value="${token}">
+                            <input type="hidden" id="appToken" name="appToken" value="98a8593f-17a5-48b3-9d70-81af1c26c8e8"
+                                   th:value="${appToken}">
                             <input type="hidden" id="access_token" name="accessToken">
                             <input type="hidden" id="order_reference_id" name="orderReferenceId">
                             <button id="purchase_button" class="btn btn-info btn-lg btn-block" disabled>購　入</button>
