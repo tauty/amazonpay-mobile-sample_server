@@ -30,7 +30,7 @@
         <!-- Blog Entries Column -->
         <div class="col-md-8">
 
-            <h4>ご購入ありがとうございました。</h4>
+            <h1 class="mt-4">確認画面</h1>
 
             <div class="card mb-4">
                 <div class="card-body">
@@ -126,16 +126,41 @@
                         </tr>
                         </tbody>
                     </table>
+
+                    <br/>
                     
+                    <div>
+                        <div data-toggle="tooltip2" data-container="body" data-placement="top" data-html="true" title=""
+                             data-original-title="&lt;p&gt;みなさまのECサイトへの会員登録・メールマガジンの購読をお勧めすることも可能です。&lt;/p&gt;">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" checked=""> お客様情報を会員として登録する
+                                </label>
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" checked=""> メールマガジンを購読する
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <form method="post" action="do_purchase" id="purchase_form">
+                            <!-- AmazonPayController#confirmOrderから受け取ったtokenの情報を埋め込む -->
+                            <input type="hidden" id="token" name="token" value="ecde72b9-3e10-45bf-ab45-a1833751c37b"
+                                   th:value="${token}">
+                            <input type="hidden" id="access_token" name="accessToken" th:value="${accessToken}">
+                            <input type="hidden" id="order_reference_id" name="orderReferenceId" th:value="${orderReferenceId}">
+                            <button id="purchase_button" class="btn btn-info btn-lg btn-block">購　入</button>
+                        </form>
+                    </div>
+
                     <br>
 
                 </div>
             </div>
-
-            <!-- PCのブラウザからのアクセスの場合、Topボタンを表示する. -->
-            <form th:if="${os} == 'pc'" method="get" action="pc/order">
-                <input type="submit" value="Top" class="btn btn-info btn-lg btn-block"><br>
-            </form>
 
         </div>
 
@@ -144,6 +169,16 @@
 
 </div>
 <!-- /.container -->
+
+<script type="text/javascript">
+document.getElementById('purchase_button').addEventListener (
+  'click',
+  function() {
+      this.disabled = true;
+      document.getElementById('purchase_form').submit();
+  }
+);
+</script>
 
 </body>
 

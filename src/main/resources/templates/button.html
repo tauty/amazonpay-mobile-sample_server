@@ -31,8 +31,8 @@
       display: none;
     }
     -->
-
     </style>
+
 </head>
 
 <body data-gr-c-s-loaded="true">
@@ -64,7 +64,7 @@
 
             authorization: function() {
               loginOptions = {scope: "profile payments:widget payments:shipping_address", popup: false};
-              authRequest = amazon.Login.authorize (loginOptions, "confirm_order");
+              authRequest = amazon.Login.authorize (loginOptions, "[( ${mode} == 'app' ? 'widgets' : 'confirm_order' )]");
             },
             onError: function(error) {
                 console.log(error.getErrorCode());
