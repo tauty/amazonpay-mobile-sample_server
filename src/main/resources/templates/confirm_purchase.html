@@ -84,6 +84,7 @@
                         </tbody>
                     </table>
 
+                    <button id="change_addr_pay" class="btn btn-info btn-lg btn-block">送付先・支払い方法変更</button>
                 </div>
             </div>
 
@@ -171,12 +172,27 @@
 <!-- /.container -->
 
 <script type="text/javascript">
+document.getElementById('change_addr_pay').addEventListener(
+    'click',
+    function() {
+        // Android: AmazonPayController#createOrderから受け取ったtokenを埋め込んで、intentを送信してAmazonPayActivityを起動する.
+        [( ${os} == 'android' ? 'location.href = "intent://amazon_pay_host#Intent;package=com.amazon.pay.sample.android;scheme=amazon_pay_schema;S.token=' + ${token} + ';end;";' )]
+
+        // iOS: AmazonPayController#createOrderから受け取ったtokenを埋め込んで、WebViewController#viewDidLoadで登録された
+        // CallbackのWebViewController#userContentControllerを起動する.
+        [( ${os} == 'ios'     ? 'webkit.messageHandlers.jsCallbackHandler.postMessage("' + ${token} + '");' )]
+
+        // PC: 通常の画面遷移
+        [( ${os} == 'pc'   ? 'document.getElementById("other_form").submit();' )]
+    }
+);
+
 document.getElementById('purchase_button').addEventListener (
-  'click',
-  function() {
-      this.disabled = true;
-      document.getElementById('purchase_form').submit();
-  }
+    'click',
+    function() {
+        this.disabled = true;
+        document.getElementById('purchase_form').submit();
+    }
 );
 </script>
 

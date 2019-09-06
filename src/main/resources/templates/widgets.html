@@ -56,19 +56,19 @@
 
 <body data-gr-c-s-loaded="true">
 
-<div id="loading">
+<div id="loading" th:if="${showWidgets} == 'false'">
     <img src="img/loading.gif" alt="loading">
 </div>
 
 <!-- Page Content -->
-<div class="container hidden">
+<div id="widgets" class="container[( ${showWidgets} == 'false' ? ' hidden' )]">
 
     <div class="row">
 
         <!-- Blog Entries Column -->
         <div class="col-md-8">
 
-            <h1 class="my-4">ご注文手続き</h1>
+            <h1 class="my-4">　住所・支払方法変更</h1>
 
             <!-- Blog Post -->
             <div class="card mb-4" id="highlight1" data-toggle="tooltip1" data-container="body" data-placement="left"
@@ -78,19 +78,60 @@
                     <div id="addressBookWidgetDiv" style="height:250px"></div>
                     <div id="walletWidgetDiv" style="height:250px"></div>
                 </div>
-            </div>
 
-            <div>
-                <form method="post" action="next" id="next_form">
-                    <!-- AmazonPayController#confirmOrderから受け取ったtokenの情報を埋め込む -->
-                    <input type="hidden" id="token" name="token" value="ecde72b9-3e10-45bf-ab45-a1833751c37b"
-                           th:value="${token}">
-                    <input type="hidden" id="appToken" name="appToken" value="98a8593f-17a5-48b3-9d70-81af1c26c8e8"
-                           th:value="${appToken}">
-                    <input type="hidden" id="access_token" name="accessToken">
-                    <input type="hidden" id="order_reference_id" name="orderReferenceId">
-                    <button id="next_button" class="btn btn-info btn-lg btn-block" disabled>次　へ</button>
-                </form>
+                <!-- Sidebar Widgets Column -->
+                <div class="col-md-4">
+
+                    <!-- Side Widget -->
+                    <div class="card my-4">
+                        <h5 class="card-header">お支払い金額</h5>
+                        <div class="card-body" id="highlight2">
+
+                            <!-- AmazonPayController#confirmOrderから受け取ったorderの情報を表示 -->
+                            <table class="table table-striped">
+                                <tbody>
+                                <tr>
+                                    <td>商品合計</td>
+                                    <td class="text-right" th:text="|￥${#numbers.formatInteger(order.price, 3, 'COMMA')}|">
+                                        ￥4,000
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>税込金額</strong></td>
+                                    <td class="text-right"><strong
+                                            th:text="|￥${#numbers.formatInteger(order.priceTaxIncluded, 3, 'COMMA')}|">￥4,320</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>送料</td>
+                                    <td class="text-right">￥<span id="postage">-</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>総合計</strong></td>
+                                    <td class="text-right"><strong>￥<span id="total_price">-</span></strong></td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <form method="post" action="next" id="next_form">
+                                <!-- AmazonPayController#confirmOrderから受け取ったtokenの情報を埋め込む -->
+                                <input type="hidden" id="token" name="token" value="ecde72b9-3e10-45bf-ab45-a1833751c37b"
+                                       th:value="${token}">
+                                <input type="hidden" id="appToken" name="appToken" value="98a8593f-17a5-48b3-9d70-81af1c26c8e8"
+                                       th:value="${appToken}">
+                                <input type="hidden" id="access_token" name="accessToken">
+                                <input type="hidden" id="order_reference_id" name="orderReferenceId">
+                                <!-- button id="next_button" class="btn btn-info btn-lg btn-block" disabaled>次　へ</button -->
+                                <button id="next_button" class="btn btn-info btn-lg btn-block" disabaled>次　へ</button>
+                            </form>
+
+                            <br>
+
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
@@ -239,7 +280,7 @@
             amazonOrderReferenceId: orderReferenceId,
             onReady: function(orderReference) {
                 console.log(orderReference);
-                document.getElementById('next_button').disabled = false;
+                document.getElementById("next_button").disabled = false;
             },
             onPaymentSelect: function(orderReference) {
                 console.log(orderReference);
@@ -260,7 +301,7 @@
                   });
                 }
 
-                document.getElementById('next_button').click();
+                [( ${showWidgets} == 'false' ? 'document.getElementById("next_button").click();' )]
             },
             design: {
                 designMode: 'responsive'

@@ -149,8 +149,8 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
     @GetMapping("/button")
-    public String button(@RequestParam String token, @RequestParam String mode, HttpServletResponse response, Model model) {
-        System.out.println("[button] mode: " + mode + ", token: " + token);
+    public String button(@RequestParam String token, @RequestParam String mode, @RequestParam(required = false) String showWidgets, HttpServletResponse response, Model model) {
+        System.out.println("[button] mode: " + mode + ", token: " + token + ", showWidgets: " + showWidgets);
 
         // tokenが削除済みの場合(購入処理後、「戻る」で戻ってきてAmazonPayボタンがクリックされた場合)、エラーとする.
         if (!TokenUtil.exists(token)) return "error";
@@ -165,6 +165,13 @@ public class AmazonPayController {
         cookie = new Cookie("appToken", token);
         cookie.setSecure(true);
         response.addCookie(cookie);
+
+        // widget表示・非表示フラグ(mode=appの確認画面で、「送付先・支払い方法変更」ボタン押下時)
+        if(showWidgets != null) {
+            cookie = new Cookie("showWidgets", "true");
+            cookie.setSecure(true);
+            response.addCookie(cookie);
+        }
 
         model.addAttribute("mode", mode);
         model.addAttribute("clientId", clientId);
@@ -182,25 +189,30 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
     @GetMapping("/widgets")
-    public String widgets(@CookieValue(required = false) String token, @CookieValue(required = false) String appToken, HttpServletResponse response, Model model) {
+    public String widgets(@CookieValue(required = false) String token, @CookieValue(required = false) String appToken,
+                          @CookieValue(required = false) String showWidgets, HttpServletResponse response, Model model) {
         if (token == null) return "dummy"; // Chrome Custom Tabsが本URLを勝手にreloadすることがあるので、その対策.
-        System.out.println("[widgets] token = " + token + ", appToken = " + appToken);
+        System.out.println("[widgets] token = " + token + ", appToken = " + appToken + ", showWidgets = " + showWidgets);
 
-        // token & appToken のCookieからの削除
-        Cookie cookie = new Cookie("token", token);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-
-        cookie = new Cookie("appToken", appToken);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        // Cookieの削除
+        removeCookie(response, "token");
+        removeCookie(response, "appToken");
+        removeCookie(response, "showWidgets");
 
         model.addAttribute("token", token);
         model.addAttribute("appToken", appToken);
+        model.addAttribute("order", TokenUtil.get(token));
+        model.addAttribute("showWidgets", String.valueOf(showWidgets != null));
         model.addAttribute("clientId", clientId);
         model.addAttribute("sellerId", sellerId);
 
         return "widgets";
+    }
+
+    private void removeCookie(HttpServletResponse response, String key) {
+        Cookie cookie = new Cookie(key, "");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 
     /**
@@ -298,7 +310,8 @@ public class AmazonPayController {
      * @throws AmazonServiceException Amazon PayのAPIがthrowするエラー. 今回はサンプルなので特に何もしていないが、実際のコードでは正しく対処する.
      */
     @PostMapping("/next")
-    public String next(@RequestParam String token, @RequestParam String appToken, @RequestParam String accessToken, @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
+    public String next(@RequestParam String token, @RequestParam String appToken, @RequestParam String accessToken
+            , @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
         System.out.println("[next] " + token + ", " + appToken + ", " + orderReferenceId + ", " + accessToken);
 
         Order order = TokenUtil.get(token);
