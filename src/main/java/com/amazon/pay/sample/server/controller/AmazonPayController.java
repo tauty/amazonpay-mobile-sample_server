@@ -615,6 +615,19 @@ public class AmazonPayController {
         return "thanks";
     }
 
+    /**
+     * Thanks画面Activity内のWebViewから呼び出されて、受注Objectの詳細情報を表示する.
+     *
+     * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
+     */
+    @PostMapping("/error")
+    @GetMapping("/error")
+    public String error() {
+        System.out.println("[error] ");
+
+        return "error";
+    }
+
     private String generateId() {
         return String.valueOf(Math.abs(ThreadLocalRandom.current().nextLong()));
     }

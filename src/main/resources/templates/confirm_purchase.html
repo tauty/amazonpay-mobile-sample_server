@@ -176,7 +176,7 @@ document.getElementById('change_addr_pay').addEventListener(
     'click',
     function() {
         // Android: AmazonPayController#createOrderから受け取ったtokenを埋め込んで、intentを送信してAmazonPayActivityを起動する.
-        [( ${os} == 'android' ? 'location.href = "intent://amazon_pay_host#Intent;package=com.amazon.pay.sample.android;scheme=amazon_pay_schema;S.token=' + ${token} + ';end;";' )]
+        [( ${os} == 'android' ? 'location.href = "intent://amazon_pay_host#Intent;package=com.amazon.pay.sample.android;scheme=amazon_pay_schema;S.token=' + ${token} + ';S.showWidgets=true;end;";' )]
 
         // iOS: AmazonPayController#createOrderから受け取ったtokenを埋め込んで、WebViewController#viewDidLoadで登録された
         // CallbackのWebViewController#userContentControllerを起動する.
