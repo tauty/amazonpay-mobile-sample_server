@@ -17,8 +17,7 @@
 
     // iOS: AmazonPayController#purchaseから受け取ったtokenを埋め込んで、Custom URL Scheme(ディープリンク)を送信して、
     // AppDelegate#applicationを経由してThanksControllerを起動する.
-    //TODO よく考えたら、Holder.modeで分岐できるから、thanksと同じ飛び先で対応できる。要リファクタリング。
-    [( ${os} == 'ios'     ? 'location.href = "amazonpay-mobile-sample-ios://confirm-purchase/?token=' + ${token} + '&appToken=' + ${appToken} + '&accessToken=' + ${accessToken} + '";' )]
+    [( ${os} == 'ios'     ? 'location.href = "amazonpay-mobile-sample-ios://thanks/?token=' + ${token} + '&appToken=' + ${appToken} + '&accessToken=' + ${accessToken} + '";' )]
 
     // other: 通常の遷移
     [( ${os} == 'pc'   ? 'document.getElementById("other_form").submit();' )]
