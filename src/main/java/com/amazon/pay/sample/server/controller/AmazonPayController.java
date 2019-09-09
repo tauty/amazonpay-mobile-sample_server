@@ -149,7 +149,8 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
     @GetMapping("/button")
-    public String button(@RequestParam String token, @RequestParam String mode, @RequestParam(required = false) String showWidgets, HttpServletResponse response, Model model) {
+    public String button(@RequestParam String token, @RequestParam(required = false) String mode,
+                         @RequestParam(required = false) String showWidgets, HttpServletResponse response, Model model) {
         System.out.println("[button] mode: " + mode + ", token: " + token + ", showWidgets: " + showWidgets);
 
         // tokenが削除済みの場合(購入処理後、「戻る」で戻ってきてAmazonPayボタンがクリックされた場合)、エラーとする.
