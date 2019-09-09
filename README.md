@@ -73,6 +73,8 @@ Intellijをまだインストールされていない方は、上記のリンク
   - https://localhost:8443
   - https://10.0.2.2:8443
 - リダイレクトURL
+  - https://localhost:8443/widgets
+  - https://10.0.2.2:8443/widgets
   - https://localhost:8443/confirm_order
   - https://10.0.2.2:8443/confirm_order
 
