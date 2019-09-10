@@ -1,81 +1,52 @@
 # Amazon Pay モバイル サンプルアプリについて
 SmartPhone上でAmazon Payを使って商品を購入するアプリの、サンプル実装を提供しています。  
-技術的には、Amazon Payボタン・住所選択ウィジェット・支払い方法選択ウィジェットなどの画面部品をアプリから起動したブラウザ上で表示して決済を行なっており、決済部分はHTML + CSS + JavaScriptで実装されています。  
-通常のPC上での実装とほぼ同じ方式で決済が実現できるため、学習コストの節約・コードのメンテナンスビリティの向上といった効果が見込めます。  
+技術的には、Amazon Payボタン・住所選択ウィジェット・支払い方法選択ウィジェットなどの画面部品をアプリから起動したブラウザ上で表示してAmazon Payへのログインを行なっており、主にHTML + CSS + JavaScriptで実装されています。  
+通常のPC上での実装とほぼ同じ方式でAmazon Pay決済が実現できるため、学習コストの節約・コードのメンテナンスビリティの向上といった効果が見込めます。  
 
 サーバー用の本プロジェクトの他に、Androidアプリ・iOS(iPhone, iPad)アプリ用の二つを合わせた、合計３つのプロジェクトで構成されており、それぞれのURLは下記になります。
 - Server: https://github.com/tauty/amazonpay-mobile-sample_server
 - Android: https://github.com/tauty/amazonpay-mobile-sample_android
 - iOS(iPhone, iPad): https://github.com/tauty/amazonpay-mobile-sample_ios
 
-Android版・iOS版について、下記に概要を示します。
+下記に概要を示します。
 
-## Android
-### Native版
-通常のAndroidアプリ向けの実装サンプルです。  
-アプリ側で商品の購入数を選んで受注情報を作成し、Chrome Custom Tabsを起動してAmazon Payへのログイン・住所＆支払い方法の選択・購入を実施し、またアプリ側に戻って購入完了画面を表示します。  
+## 概要
+本サンプルアプリでは、下記の環境向けに実装を提供しています。
 
-#### 動作環境
+- Android
+  - Nativeアプリ
+  - WebViewアプリ
+- iOS
+  - Nativeアプリ
+  - WebViewアプリ(WKWewbView, UIWebView)
+
+また、アプリへインテグレーションする時のフローも下記の二通りが用意されています。現在のアプリの実装に合わせて、それぞれ参考にする実装をご選択下さい。
+
+### アプリ側に購入ボタンがあるフロー
+アプリ側で商品の購入数を選んで受注情報を作成し、ブラウザを起動してAmazon Payへのログインしてデフォルトの住所＆支払い方法を取得し、アプリに戻って確認画面を表示して購入を実施します。  
+
+![a_app_native](img/a_app_native.gif)  
+※ AndroidのNative実装  
+
+住所・支払い方法を変更したい場合には確認外面で「送付先・支払い変更」ボタンをクリックして再度ブラウザを立ち上げて選択します。
+
+![i_app_native_addr](img/i_app_native_addr.gif)  
+※ iOSのNative実装  
+
+### 起動したブラウザ側に購入ボタンがあるフロー
+アプリ側で商品の購入数を選んで受注情報を作成し、ブラウザを起動してAmazon Payへのログイン・住所＆支払い方法の選択・購入を実施し、またアプリ側に戻って購入完了画面を表示します。  
+![i_safari_webview](img/i_safari_webview.gif)  
+※ iOSのWebView実装  
+
+### 二つのフローの選択基準
+基本的にはアプリへのインテグレーションがしやすい方を選べば良いです。  
+どちらでも問題なくインテグレーションができるのであれば、セキュリティを確保するために考慮することがより少ない、「アプリ側に購入ボタンがあるフロー」をお勧めします。  
+※ 詳細は後述の「本サンプルの使い方」参照。
+
+### 動作環境
 Android 7以降: Google Chrome 64以降  
-[参考] https://pay.amazon.com/jp/help/202030010
-
-#### 画面動作
-![native_flow](img/android_native.gif)
-
-### WebView版
-WebView(アプリ内ブラウザ)を使ったアプリ向けの実装サンプルです。  
-基本的な流ればNative版と同じで、WebView内で商品の購入数を選んで受注情報を作成し、Chrome Custom Tabsを起動してAmazon Payへのログイン・住所＆支払い方法の選択・購入を実施し、またアプリ側に戻って購入完了画面を表示します。  
-※ Amazon Payではセキュリティ確保のため、URLを隠したり偽装したりできてしまうWebView上でのログイン処理を原則禁止しております。そのため、本サンプルのようにChrome Custom Tabsへ処理を飛ばす必要があります。
-
-#### 動作環境
-Android 7以降: Google Chrome 64以降  
-[参考] https://pay.amazon.com/jp/help/202030010
-
-#### 画面動作
-![webview_flow](img/android_webview.gif)
-
-## iOS(iPhone, iPad)
-### Native版
-通常のiOSアプリ向けの実装サンプルです。  
-アプリ側で商品の購入数を選んで受注情報を作成し、SFSafariViewを起動してAmazon Payへのログイン・住所＆支払い方法の選択・購入を実施し、またアプリ側に戻って購入完了画面を表示します。  
-
-#### 動作環境
 iOS バージョン11.2以降: Safari Mobile 11以降  
 [参考] https://pay.amazon.com/jp/help/202030010
-
-#### 画面動作
-![native_flow](img/ios_native.gif)
-
-### WebView版
-WebView(アプリ内ブラウザ)を使ったアプリ向けの実装サンプルです。  
-基本的な流ればNative版と同じで、WebView内で商品の購入数を選んで受注情報を作成し、SFSafariViewを起動してAmazon Payへのログイン・住所＆支払い方法の選択・購入を実施し、またアプリ側に戻って購入完了画面を表示します。  
-※ Amazon Payではセキュリティ確保のため、URLを隠したり偽装したりできてしまうWebView上でのログイン処理を原則禁止しております。そのため、本サンプルのようにSFSafariViewへ処理を飛ばす必要があります。
-
-#### 動作環境
-iOS バージョン11.2以降: Safari Mobile 11以降  
-[参考] https://pay.amazon.com/jp/help/202030010
-
-#### 画面動作
-![webview_flow](img/ios_webview.gif)
-
-# 本サンプルの使い方
-本サンプルでは、大まかに下記のように決済処理を実装しています。  
-(1) APP側: ユーザーが購入する商品・数量を入力  
-(2) APP側: (1)を元に、受注番号採番 & 受注情報生成  
-(3) APP側: ユーザーが擬似Amazon Payボタンをクリック  
-(4) Chrome Custom Tabs & SFSafariView側(以下「C&S側」): 本物のAmazon Payボタンを裏で表示してJavaScriptで自動的にClick  
-(5) C&S側: Amazon Payにログイン  
-(6) C&S側: 住所ウィジェット・支払いウィジェットを表示してユーザーがそれぞれ選択  
-(7) C&S側: ユーザーが購入ボタンをクリック  
-(8) C&S側: Amazon Pay APIを呼び出して注文の詳細設定・確定・与信など決済処理を実行  
-(9) APP側: Thanks画面の表示  
-
-この処理フローはユーザー側の操作が少なくお勧めではありますが、システム側の都合で変更して頂いても問題ありません。  
-例えば、(2)の受注番号採番 & 受注情報生成処理は(8)のAmazon Pay APIを使った決済処理と同時に実施しても良いでしょう。  
-またユーザーの操作は増えてしまいますが、(7)でクリックするのを「次へ」ボタンとし、APP側に戻ってきてから改めて「購入」ボタンをクリックしてもらい、APP側で決済処理を実行する実装も考えられるでしょう。
-
-Chrome Custom Tabs & SFSafariView側での実施が必須なのは(4), (5), (6)だけなので、後は各々のご事情に合わせてご自由にカスタマイズして下さい。  
-※ なお、もしサンプルの中で流用可能な箇所があればご自由にお使い頂いて構いません。
 
 # server側のインストール
 
@@ -102,6 +73,8 @@ Intellijをまだインストールされていない方は、上記のリンク
   - https://localhost:8443
   - https://10.0.2.2:8443
 - リダイレクトURL
+  - https://localhost:8443/widgets
+  - https://10.0.2.2:8443/widgets
   - https://localhost:8443/confirm_order
   - https://10.0.2.2:8443/confirm_order
 
@@ -137,3 +110,17 @@ Gradle Viewを開いて「Tasks」 →　「application」 →　「bootRun」�
 *Note: Android & iOSについては、それぞれのプロジェクトのREADME.mdを参照してください。*
 - Android: https://github.com/tauty/amazonpay-mobile-sample_android
 - iOS(iPhone, iPad): https://github.com/tauty/amazonpay-mobile-sample_ios
+
+# 本サンプルの使い方
+本サンプルでは二通りのフローを実装していますが、これらはシステムの都合で自由にカスタマイズして頂いて問題ありませんし、もしそのまま使える箇所があれば使っていただいても構いません。
+但しセキュリティの観点から、特に下記のポイントはお気をつけ下さい。  
+　※ 下記は少々内容が難しいので、先にAndroid/iOSのプロジェクトやフロー図・ソースコード等を見て全体像を掴んだ後に確認することをお勧めします。
+1. アプリと起動するブラウザとのデータのやり取りに使用するtokenの生成には、十分に推測が困難なものを使用すること（参照: [TokenUtil](./src/main/java/com/amazon/pay/sample/server/utils/TokenUtil.java)のコメント）
+2. アプリからブラウザを起動した直後に、新しいtokenを生成してアプリから引き継いだデータを登録し直すこと (Session Fixationという攻撃により、住所ウィジェット等から取得した個人情報が漏れるのを防ぐため)
+3. 古いtokenもアプリ側・ブラウザ側の両方で保持しておき、アプリに戻ったタイミングで一致判定を行うと良い (Amazon Payの決済フロー全体を、同一の人物が実行していることを検証するため。例えばアプリがブラウザを起動するときのURLを、別の人に踏ませて続きのフローを実行させた場合も、この一致判定で検出してエラーにできる)
+
+※ 3についての補足: 二通りのフローを比べてみると、「アプリ側に購入ボタンがあるフロー」の方が、購入ボタンのクリックがブラウザからアプリに戻って一致判定が行われた後になるため、よりセキュアであることが分かる。  
+※ 但し、「起動したブラウザ側に購入ボタンがあるフロー」であってもサンプルのように  
+  - Amazon Payの住所ウィジェットから住所を取得している
+  - 「購入」ボタンの前で購入商品の確認ができる  
+  を満たしていれば、URLを踏まされた別のユーザも、自分で確認した商品を自分の住所に向けて送ることになり、セキュリティ上の問題にはならない

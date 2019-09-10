@@ -149,8 +149,9 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
     @GetMapping("/button")
-    public String button(@RequestParam String token, HttpServletResponse response, Model model) {
-        System.out.println("[button] " + token);
+    public String button(@RequestParam String token, @RequestParam(required = false) String mode,
+                         @RequestParam(required = false) String showWidgets, HttpServletResponse response, Model model) {
+        System.out.println("[button] mode: " + mode + ", token: " + token + ", showWidgets: " + showWidgets);
 
         // tokenが削除済みの場合(購入処理後、「戻る」で戻ってきてAmazonPayボタンがクリックされた場合)、エラーとする.
         if (!TokenUtil.exists(token)) return "error";
@@ -161,10 +162,58 @@ public class AmazonPayController {
         cookie.setSecure(true);
         response.addCookie(cookie);
 
+        // 更新前のtokenも、APPに戻ったタイミングでの確認用に保持する
+        cookie = new Cookie("appToken", token);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+
+        // widget表示・非表示フラグ(mode=appの確認画面で、「送付先・支払い方法変更」ボタン押下時)
+        if(showWidgets != null) {
+            cookie = new Cookie("showWidgets", "true");
+            cookie.setSecure(true);
+            response.addCookie(cookie);
+        }
+
+        model.addAttribute("mode", mode);
         model.addAttribute("clientId", clientId);
         model.addAttribute("sellerId", sellerId);
 
         return "button";
+    }
+
+    /**
+     * ボタンWidget表示画面から呼び出されて、アドレスWidget・支払いWidget画面を表示する.
+     *
+     * @param token    受注Objectへのアクセス用token
+     * @param response responseオブジェクト
+     * @param model    画面生成templateに渡す値を設定するObject
+     * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
+     */
+    @GetMapping("/widgets")
+    public String widgets(@CookieValue(required = false) String token, @CookieValue(required = false) String appToken,
+                          @CookieValue(required = false) String showWidgets, HttpServletResponse response, Model model) {
+        if (token == null) return "dummy"; // Chrome Custom Tabsが本URLを勝手にreloadすることがあるので、その対策.
+        System.out.println("[widgets] token = " + token + ", appToken = " + appToken + ", showWidgets = " + showWidgets);
+
+        // Cookieの削除
+        removeCookie(response, "token");
+        removeCookie(response, "appToken");
+        removeCookie(response, "showWidgets");
+
+        model.addAttribute("token", token);
+        model.addAttribute("appToken", appToken);
+        model.addAttribute("order", TokenUtil.get(token));
+        model.addAttribute("showWidgets", String.valueOf(showWidgets != null));
+        model.addAttribute("clientId", clientId);
+        model.addAttribute("sellerId", sellerId);
+
+        return "widgets";
+    }
+
+    private void removeCookie(HttpServletResponse response, String key) {
+        Cookie cookie = new Cookie(key, "");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 
     /**
@@ -176,16 +225,21 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
     @GetMapping("/confirm_order")
-    public String confirmOrder(@CookieValue(required = false) String token, HttpServletResponse response, Model model) {
+    public String confirmOrder(@CookieValue(required = false) String token, @CookieValue(required = false) String appToken, HttpServletResponse response, Model model) {
         if (token == null) return "dummy"; // Chrome Custom Tabsが本URLを勝手にreloadすることがあるので、その対策.
-        System.out.println("[confirm_order] " + token);
+        System.out.println("[confirm_order] token = " + token + ", appToken = " + appToken);
 
-        // tokenのCookieからの削除
+        // token & appToken のCookieからの削除
         Cookie cookie = new Cookie("token", token);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
+        cookie = new Cookie("appToken", appToken);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
         model.addAttribute("token", token);
+        model.addAttribute("appToken", appToken);
         model.addAttribute("order", TokenUtil.get(token));
         model.addAttribute("clientId", clientId);
         model.addAttribute("sellerId", sellerId);
@@ -256,9 +310,173 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      * @throws AmazonServiceException Amazon PayのAPIがthrowするエラー. 今回はサンプルなので特に何もしていないが、実際のコードでは正しく対処する.
      */
+    @PostMapping("/next")
+    public String next(@RequestParam String token, @RequestParam String appToken, @RequestParam String accessToken
+            , @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
+        System.out.println("[next] " + token + ", " + appToken + ", " + orderReferenceId + ", " + accessToken);
+
+        Order order = TokenUtil.get(token);
+        order.orderReferenceId = orderReferenceId;
+
+        Config config = new PayConfig()
+                .withSellerId(sellerId)
+                .withAccessKey(accessKey)
+                .withSecretKey(secretKey)
+                .withCurrencyCode(CurrencyCode.JPY)
+                .withSandboxMode(true)
+                .withRegion(Region.JP);
+
+        Client client = new PayClient(config);
+
+        //--------------------------------------------
+        // Amazon Pay側のOrderReferenceの詳細情報の取得
+        //--------------------------------------------
+        GetOrderReferenceDetailsRequest request = new GetOrderReferenceDetailsRequest(orderReferenceId);
+        // request.setAddressConsentToken(paramMap.get("access_token")); // Note: It's old! should be removed!
+        request.setAccessToken(accessToken);
+        GetOrderReferenceDetailsResponseData response = client.getOrderReferenceDetails(request);
+
+        System.out.println("<GetOrderReferenceDetailsResponseData>");
+        System.out.println(response);
+        System.out.println("</GetOrderReferenceDetailsResponseData>");
+
+        // Amazon Pay側の受注詳細情報を、受注Objectに反映
+        order.buyerName = emptyIfNull(response.getDetails().getBuyer().getName());
+        order.buyerEmail = emptyIfNull(response.getDetails().getBuyer().getEmail());
+        order.buyerPhone = emptyIfNull(response.getDetails().getBuyer().getPhone());
+        order.destinationName = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getName());
+        order.destinationPhone = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getPhone());
+        order.destinationPostalCode = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getPostalCode());
+        order.destinationStateOrRegion = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getStateOrRegion());
+        order.destinationCity = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getCity());
+        order.destinationAddress1 = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getAddressLine1());
+        order.destinationAddress2 = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getAddressLine2());
+        order.destinationAddress3 = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getAddressLine3());
+
+        DatabaseMock.storeOrder(order);
+
+        model.addAttribute("os", order.os);
+        model.addAttribute("token", token);
+        model.addAttribute("appToken", appToken);
+        model.addAttribute("accessToken", accessToken);
+
+        return "next";
+    }
+
+    /**
+     * Thanks画面Activity内のWebViewから呼び出されて、受注Objectの詳細情報を表示する.
+     *
+     * @param token 受注Objectへのアクセス用token
+     * @param model 画面生成templateに渡す値を設定するObject
+     * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
+     */
+    @PostMapping("/confirm_purchase")
+    public String confirmPurchase(@RequestParam String token, @RequestParam String accessToken, Model model) {
+        System.out.println("[confirm_purchase] " + token);
+
+        Order order = TokenUtil.get(token);
+        model.addAttribute("order", order);
+        model.addAttribute("os", order.os);
+        model.addAttribute("token", token);
+        model.addAttribute("accessToken", accessToken);
+
+        return "confirm_purchase";
+    }
+
+    /**
+     * 購入確定画面から呼び出されて、購入処理を実行してThanks画面へ遷移させる.
+     *
+     * @param token            受注Objectへのアクセス用token
+     * @param accessToken      Amazon Pay側の情報にアクセスするためのToken. ボタンWidgetクリック時に取得する.
+     * @param model            画面生成templateに渡す値を設定するObject
+     * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
+     * @throws AmazonServiceException Amazon PayのAPIがthrowするエラー. 今回はサンプルなので特に何もしていないが、実際のコードでは正しく対処する.
+     */
+    @PostMapping("/do_purchase")
+    public String doPurchase(@RequestParam String token, @RequestParam String accessToken, Model model) throws AmazonServiceException {
+        System.out.println("[do_purchase] " + token + ", " + accessToken);
+
+        Order order = TokenUtil.get(token);
+
+        Config config = new PayConfig()
+                .withSellerId(sellerId)
+                .withAccessKey(accessKey)
+                .withSecretKey(secretKey)
+                .withCurrencyCode(CurrencyCode.JPY)
+                .withSandboxMode(true)
+                .withRegion(Region.JP);
+
+        Client client = new PayClient(config);
+
+        //--------------------------------
+        // OrderReferenceの詳細情報の設定
+        //--------------------------------
+        SetOrderReferenceDetailsRequest setOrderReferenceDetailsRequest = new SetOrderReferenceDetailsRequest(order.orderReferenceId, String.valueOf(order.priceTaxIncluded));
+
+        //set optional parameters
+        setOrderReferenceDetailsRequest.setOrderCurrencyCode(CurrencyCode.JPY);
+        setOrderReferenceDetailsRequest.setSellerNote(String.valueOf(order.items));
+        setOrderReferenceDetailsRequest.setSellerOrderId(order.myOrderId);
+        setOrderReferenceDetailsRequest.setStoreName("My Sweet Shop");
+
+        //call API
+        SetOrderReferenceDetailsResponseData responseSet = client.setOrderReferenceDetails(setOrderReferenceDetailsRequest);
+
+        System.out.println("<SetOrderReferenceDetailsResponseData>");
+        System.out.println(responseSet);
+        System.out.println("</SetOrderReferenceDetailsResponseData>");
+
+        //--------------------------------
+        // OrderReferenceの確認
+        //--------------------------------
+        ConfirmOrderReferenceResponseData responseCon = client.confirmOrderReference(new ConfirmOrderReferenceRequest(order.orderReferenceId));
+        // Note: it was not String, but request object!
+
+        System.out.println("<ConfirmOrderReferenceResponseData>");
+        System.out.println(responseCon);
+        System.out.println("</ConfirmOrderReferenceResponseData>");
+
+        //----------------------------------
+        // Authorize(オーソリ, 与信枠確保)処理
+        //----------------------------------
+        AuthorizeRequest authorizeRequest = new AuthorizeRequest(order.orderReferenceId, generateId(), String.valueOf(order.totalPrice));
+
+        //Set Optional parameters
+        authorizeRequest.setAuthorizationCurrencyCode(CurrencyCode.JPY); //Overrides currency code set in Client
+        authorizeRequest.setSellerAuthorizationNote("You can write something here.");
+        authorizeRequest.setTransactionTimeout("0"); //Set to 0 for synchronous mode
+//        authorizeRequest.setCaptureNow(true); // Set this to true if you want to capture the amount in the same API call
+
+        //Call Authorize API
+        AuthorizeResponseData authResponse = client.authorize(authorizeRequest);
+
+        System.out.println("<AuthorizeResponseData>");
+        System.out.println(authResponse);
+        System.out.println("</AuthorizeResponseData>");
+
+        // 受注Objectのステータスをオーソリ完了に設定して保存
+        order.myOrderStatus = "AUTHORIZED";
+        DatabaseMock.storeOrder(order);
+
+        model.addAttribute("order", order);
+        model.addAttribute("os", order.os);
+
+        return "thanks";
+    }
+
+    /**
+     * 購入確定画面から呼び出されて、購入処理を実行してThanks画面へ遷移させる.
+     *
+     * @param token            受注Objectへのアクセス用token
+     * @param accessToken      Amazon Pay側の情報にアクセスするためのToken. ボタンWidgetクリック時に取得する.
+     * @param orderReferenceId Amazon Pay側の受注管理番号.
+     * @param model            画面生成templateに渡す値を設定するObject
+     * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
+     * @throws AmazonServiceException Amazon PayのAPIがthrowするエラー. 今回はサンプルなので特に何もしていないが、実際のコードでは正しく対処する.
+     */
     @PostMapping("/purchase")
-    public String purchase(@RequestParam String token, @RequestParam String accessToken, @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
-        System.out.println("[purchase] " + token + ", " + accessToken + ", " + orderReferenceId);
+    public String purchase(@RequestParam String token, @RequestParam String appToken, @RequestParam String accessToken, @RequestParam String orderReferenceId, Model model) throws AmazonServiceException {
+        System.out.println("[purchase] " + token + ", " + appToken + ", " + orderReferenceId + ", " + accessToken);
 
         Order order = TokenUtil.get(token);
         order.orderReferenceId = orderReferenceId;
@@ -350,6 +568,7 @@ public class AmazonPayController {
 
         model.addAttribute("os", order.os);
         model.addAttribute("token", token);
+        model.addAttribute("appToken", appToken);
 
         return "purchase";
     }
@@ -372,6 +591,18 @@ public class AmazonPayController {
         return "thanks";
     }
 
+    /**
+     * Thanks画面Activity内のWebViewから呼び出されて、受注Objectの詳細情報を表示する.
+     *
+     * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
+     */
+    @PostMapping("/error")
+    @GetMapping("/error")
+    public String error() {
+        System.out.println("[error] ");
+
+        return "error";
+    }
 
     private String generateId() {
         return String.valueOf(Math.abs(ThreadLocalRandom.current().nextLong()));
