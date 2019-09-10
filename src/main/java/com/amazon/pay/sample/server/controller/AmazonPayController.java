@@ -408,31 +408,6 @@ public class AmazonPayController {
 
         Client client = new PayClient(config);
 
-        //--------------------------------------------
-        // Amazon Pay側のOrderReferenceの詳細情報の取得
-        //--------------------------------------------
-        GetOrderReferenceDetailsRequest request = new GetOrderReferenceDetailsRequest(order.orderReferenceId);
-        // request.setAddressConsentToken(paramMap.get("access_token")); // Note: It's old! should be removed!
-        request.setAccessToken(accessToken);
-        GetOrderReferenceDetailsResponseData response = client.getOrderReferenceDetails(request);
-
-        System.out.println("<GetOrderReferenceDetailsResponseData>");
-        System.out.println(response);
-        System.out.println("</GetOrderReferenceDetailsResponseData>");
-
-        // Amazon Pay側の受注詳細情報を、受注Objectに反映
-        order.buyerName = emptyIfNull(response.getDetails().getBuyer().getName());
-        order.buyerEmail = emptyIfNull(response.getDetails().getBuyer().getEmail());
-        order.buyerPhone = emptyIfNull(response.getDetails().getBuyer().getPhone());
-        order.destinationName = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getName());
-        order.destinationPhone = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getPhone());
-        order.destinationPostalCode = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getPostalCode());
-        order.destinationStateOrRegion = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getStateOrRegion());
-        order.destinationCity = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getCity());
-        order.destinationAddress1 = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getAddressLine1());
-        order.destinationAddress2 = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getAddressLine2());
-        order.destinationAddress3 = emptyIfNull(response.getDetails().getDestination().getPhysicalDestination().getAddressLine3());
-
         //--------------------------------
         // OrderReferenceの詳細情報の設定
         //--------------------------------
