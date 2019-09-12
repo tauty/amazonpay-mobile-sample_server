@@ -8,7 +8,10 @@ SmartPhone上でAmazon Payを使って商品を購入するアプリの、サン
 - Android: https://github.com/tauty/amazonpay-mobile-sample_android
 - iOS(iPhone, iPad): https://github.com/tauty/amazonpay-mobile-sample_ios
 
-下記に概要を示します。
+## 動作環境
+Android 7以降: Google Chrome 64以降  
+iOS バージョン11.2以降: Safari Mobile 11以降  
+[参考] https://pay.amazon.com/jp/help/202030010
 
 ## 概要
 本サンプルアプリでは、下記の環境向けに実装を提供しています。
@@ -41,12 +44,7 @@ SmartPhone上でAmazon Payを使って商品を購入するアプリの、サン
 ### 二つのフローの選択基準
 基本的にはアプリへのインテグレーションがしやすい方を選べば良いです。  
 どちらでも問題なくインテグレーションができるのであれば、セキュリティを確保するために考慮することがより少ない、「アプリ側に購入ボタンがあるフロー」をお勧めします。  
-※ 詳細は後述の「本サンプルの使い方」参照。
-
-### 動作環境
-Android 7以降: Google Chrome 64以降  
-iOS バージョン11.2以降: Safari Mobile 11以降  
-[参考] https://pay.amazon.com/jp/help/202030010
+※ 詳細は後述の「[本サンプルの使い方](./README.md#本サンプルの使い方)」参照。
 
 # server側のインストール
 
