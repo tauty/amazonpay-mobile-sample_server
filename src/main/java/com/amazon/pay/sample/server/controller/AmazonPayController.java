@@ -89,11 +89,13 @@ public class AmazonPayController {
         System.out.println("[createOrder] " + os + ", " + hd8 + ", " + hd10);
 
         // 受注Objectの生成
-        String token = doCreateOrder(!os.contains("-") ? os : os.substring(0, os.indexOf('-')), hd8, hd10);
+        Map<String, String> map = doCreateOrder(!os.contains("-") ? os : os.substring(0, os.indexOf('-')), hd8, hd10);
+        String token = map.get("token");
 
         // 画面生成templateへの値の受け渡し
         model.addAttribute("os", os);
         model.addAttribute("token", token);
+        model.addAttribute("appKey", map.get("appKey"));
         model.addAttribute("order", TokenUtil.get(token));
 
         return "cart";
@@ -109,12 +111,12 @@ public class AmazonPayController {
      */
     @ResponseBody
     @PostMapping("/{os}/create_order_rest")
-    public String createOrderREST(@PathVariable String os, @RequestParam int hd8, @RequestParam int hd10) {
+    public Map<String, String> createOrderREST(@PathVariable String os, @RequestParam int hd8, @RequestParam int hd10) {
         System.out.println("[createOrderREST] " + os + ", " + hd8 + ", " + hd10);
         return doCreateOrder(os, hd8, hd10);
     }
 
-    private String doCreateOrder(String os, int hd8, int hd10) {
+    private Map<String, String> doCreateOrder(String os, int hd8, int hd10) {
 
         // 受注Objectの生成/更新
         Order order = new Order();
@@ -129,13 +131,18 @@ public class AmazonPayController {
         order.price = order.items.stream().mapToLong(item -> item.summary).sum();
         order.priceTaxIncluded = (long) (1.08 * order.price);
         order.myOrderStatus = "CREATED";
+        order.appKey = TokenUtil.createToken();
 
         // 受注Objectの保存
         DatabaseMock.storeOrder(order);
 
         // 受注Objectのcacheへの保存と、アクセス用tokenの返却
         // Note: tokenを用いる理由については、TokenUtilのJavadoc参照.
-        return TokenUtil.storeByToken(order);
+        String token = TokenUtil.storeByToken(order);
+        Map<String, String> map = new HashMap<>();
+        map.put("token", token);
+        map.put("appKey", order.appKey);
+        return map;
     }
 
     /**
@@ -371,13 +378,19 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
     @PostMapping("/confirm_purchase")
-    public String confirmPurchase(@RequestParam String token, @RequestParam String accessToken, Model model) {
-        System.out.println("[confirm_purchase] " + token);
+    public String confirmPurchase(@RequestParam String token, @RequestParam String appKey, @RequestParam String accessToken, Model model) {
+        System.out.println("[confirm_purchase] token=" + token + ", appKey=" + appKey);
 
         Order order = TokenUtil.get(token);
+
+        if(!order.appKey.equals(appKey)) {
+            throw new RuntimeException("Unknown access");
+        }
+
         model.addAttribute("order", order);
         model.addAttribute("os", order.os);
         model.addAttribute("token", token);
+        model.addAttribute("appKey", order.appKey);
         model.addAttribute("accessToken", accessToken);
 
         return "confirm_purchase";
@@ -581,10 +594,15 @@ public class AmazonPayController {
      * @return 画面生成templateの名前. "cart"の時、「./src/main/resources/templates/cart.html」
      */
     @PostMapping("/thanks")
-    public String thanks(@RequestParam String token, Model model) {
-        System.out.println("[thanks] " + token);
+    public String thanks(@RequestParam String token, @RequestParam String appKey, Model model) {
+        System.out.println("[thanks] token=" + token + ", appKey=" + appKey);
 
         Order order = TokenUtil.get(token);
+
+        if(!order.appKey.equals(appKey)) {
+            throw new RuntimeException("Unknown access");
+        }
+
         model.addAttribute("order", order);
         model.addAttribute("os", order.os);
 

@@ -76,7 +76,7 @@ public class TokenUtil {
      * 実装の採用を検討する場合には乱数生成の暗号論的な強度が十分かを確認すること.
      * @return 受注Objectアクセス用のtoken
      */
-    private static String createToken() {
+    public static String createToken() {
         return UUID.randomUUID().toString();
     }
 }
